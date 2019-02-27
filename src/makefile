@@ -1,4 +1,4 @@
-OBJS = main.o bst.o movie.o parse.o
+OBJS = main.o parse.o queue.o bst.o
 OOPTS = -Wall -Wextra -g -c
 LOPTS = -Wall -Wextra -g
 
@@ -7,26 +7,31 @@ all : main
 main : $(OBJS)
 		gcc $(LOPTS) $(OBJS) -o main
 
+n : n.c
+		cc -o n n.c -lncurses 
+		./n
+
 main.o : main.c
 		gcc $(OOPTS) main.c
-
-bst.o : bst.c bst.h
-		gcc $(OOPTS) bst.c
-
-movie.o : movie.c movie.h
-		gcc $(OOPTS) movie.c
 
 parse.o : parse.c parse.h
 		gcc $(OOPTS) parse.c
 
+queue.o : queue.c queue.h
+		gcc $(OOPTS) queue.c
+
+bst.o : bst.c bst.h
+		gcc $(OOPTS) bst.c
+
 run : main
 		./main
+
+runn : n
+		./n
 
 valgrind : main
 		valgrind ./main
 
-assembly : main.o
-		otool -tv main.o
-
 clean	:
 		rm -f $(OBJS) main
+		rm -f n

@@ -2,7 +2,8 @@
 #define parse_h
 
 #include <stdio.h>
+#include "bst.h"
 
-extern void parseFILE(char *);
+extern NODE* parseFILE(char *, NODE*);
 
 #endif
