@@ -1,2 +1,6 @@
 *.pdf
 *.tsv
+*.o
+main
+/test/*
+/ncurses-6.1/*
