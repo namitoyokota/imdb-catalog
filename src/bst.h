@@ -1,12 +1,18 @@
-#ifndef __BST_INCLUDED__
-#define __BST_INCLUDED__
+#ifndef bst_h
+#define bst_h
 
-typedef struct bst BST;
+#include <stdio.h>
+
 typedef struct node NODE;
 
-extern BST *newBST();
-extern BST *insertBST(BST *bst, char *title, int id);
-extern char *getMOVIEname(BST *bst, char *title);
-extern void freeBST(BST *bst);
+extern NODE* NewNODE(int, char*, char*, char*);
+extern void PostOrder(NODE*);
+extern NODE* FindMin(NODE*);
+extern void LevelOrder(NODE*);
+extern NODE* Delete(NODE*,int);
+extern void InOrder(NODE*);
+extern void PreOrder(NODE*);
+extern NODE* insert(NODE*,int, char*, char*, char*);
+extern void traverse(NODE*);
 
 #endif

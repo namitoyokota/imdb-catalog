@@ -1,57 +1,134 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "bst.h"
-#include "movie.h"
+#include "queue.h"
 
-struct node {
-    MOVIE *movie;
-    NODE *left;
-    NODE *right;
+struct node
+{
+	bool enable;
+	int index;
+	char *title;
+	char *type;
+	char *genres;
+	NODE* left;
+	NODE* right;
 };
 
-struct bst {
-    NODE *root;
-};
+NODE* NewNODE(int index, char* title, char* type, char* genres)
+{
+	NODE* temp = (NODE*)malloc(sizeof(NODE));
+	temp->enable = true;
+	temp->index = index;
+	temp->title = title;
+	temp->type = type;
+	temp->genres = genres;
+	temp->left = NULL;
+	temp->right = NULL;
 
-NODE *newNODE(char *title, int id) {
-    NODE *node = malloc(sizeof(NODE));
-    node->movie = newMOVIE(title, id);
-    node->left = NULL;
-    node->right = NULL;
-    return node;
+	return temp;
 }
 
-BST *newBST() {
-    BST *bst = malloc(sizeof(BST));
-    bst->root = NULL;
-    return  bst;
+NODE* insert(NODE* bst, int index, char* title, char* type, char* genres)
+{
+	if(bst==NULL)
+		bst =  NewNODE(index, title, type, genres);
+
+	else if(index <= bst->index)
+		bst->left = insert(bst->left,index, title, type, genres);
+	
+	else bst->right = insert(bst->right,index, title, type, genres);
+
+	return bst;
+
 }
 
-BST *insertBST(BST *bst, char *title, int id) {
-    NODE *node = newNODE(title, id);
+NODE* Delete(NODE* bst,int index)
+{
+	if(bst==NULL)
+		return bst;
 
-    if (bst->root == NULL) {
-        // if the root node is empty insert at the top
-        bst->root = node;
-    } else {
-        // go through the tree then insert
-    }
+	else if(index < bst->index)
+		bst->left = Delete(bst->left,index);
 
-    return bst;
+	else if(index > bst->index)
+		bst->right = Delete(bst->right,index);
+
+	else
+	{
+		if(bst->left==NULL && bst->right==NULL)
+		{
+			free(bst);
+			bst = NULL;
+		}
+
+		else if(bst->left!=NULL && bst->right==NULL)
+		{
+			NODE* temp = bst->left;
+			free(temp);
+			bst = bst->left;
+		}
+		else if(bst->right!=NULL&& bst->left==NULL)
+		{
+			NODE* temp = bst->right;
+			free(temp);
+			bst = bst->right;
+		}
+
+		else
+		{
+			NODE* temp = FindMin(bst->right);
+			bst->index = temp->index;
+			bst->right = Delete(bst->right,temp->index); 
+		}
+
+	}
+	return bst;
 }
 
-char *getMOVIEname(BST *bst, char *title) {
-    // go through tree and find movie
-    //if (strcmp(bst->root->movie->getMOVIE(), title) == 0)
-        //return bst->root->movie.getMOVIE();
+NODE* FindMin(NODE* bst)
+{
+	while(bst->left!=NULL)
+		bst = bst->left;
+
+	return bst;
 }
 
-/*
-MOVIE *getMOVIE(BST *bst, int id) {
-    // go through tree and find movie
-    return
-}
-*/
+void PreOrder(NODE* bst)
+{
+	if(bst==NULL)
+		return;
 
-void freeBST(BST *bst) {
-    free(bst);
+	printf("\n%d, %d, %s, %s, %s", bst->enable, bst->index, bst->title, bst->type, bst->genres);
+	PreOrder(bst->left);
+	PreOrder(bst->right);
+}
+
+void InOrder(NODE* bst)
+{
+	if(bst==NULL)
+		return;
+
+	InOrder(bst->left);
+	printf("\n%d, %d, %s, %s, %s", bst->enable, bst->index, bst->title, bst->type, bst->genres);
+	InOrder(bst->right);
+}
+
+void PostOrder(NODE* bst)
+{
+	if(bst==NULL)
+		return;
+
+	PostOrder(bst->left);
+	PostOrder(bst->right);
+	printf("\n%d, %d, %s, %s, %s", bst->enable, bst->index, bst->title, bst->type, bst->genres);
+}
+
+
+void traverse(NODE* bst)
+{
+	printf("\nPreOrder traversal : "); PreOrder(bst);
+	printf("\n\nInorder traversal  :   "); InOrder(bst);
+	printf("\n\nPostOrder traversal:   "); PostOrder(bst);
+	printf("\n");
 }
