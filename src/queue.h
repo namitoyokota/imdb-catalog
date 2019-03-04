@@ -5,9 +5,9 @@
 
 typedef struct queue QUEUE;
 
-extern int isEmpty();
-extern void Pop();
-extern NODE* Pfront();
-extern void Enqeue(NODE*);
+extern int empty();
+extern void pop();
+extern NODE* peak();
+extern void enqueue(NODE*);
 
 #endif

@@ -12,17 +12,17 @@ struct queue
 QUEUE* front = NULL;
 QUEUE* rear = NULL;
 
-int isEmpty()
+int empty()
 {
-	if(front==NULL)
+	if (front==NULL)
 		return 1;
 	else
 		return 0;
 }
 
-void Pop()
+void pop()
 {
-	if(isEmpty())
+	if(empty())
 		return;
 
 	QUEUE* temp = front;
@@ -30,14 +30,14 @@ void Pop()
 	free(temp);
 }
 
-NODE* Pfront()
+NODE* peak()
 {
 	NODE* temp ;
 	temp = front->data;
 	return temp;
 }
 
-void Enqeue(NODE* data)
+void enqueue(NODE* data)
 {
 	QUEUE* temp;
 	temp = (QUEUE*)malloc(sizeof(QUEUE));
