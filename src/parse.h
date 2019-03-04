@@ -4,6 +4,6 @@
 #include <stdio.h>
 #include "bst.h"
 
-extern NODE* parseFILE(char *, NODE*);
+extern void parseFILE (char *, NODE**, NODE**, NODE**, NODE**, NODE**);
 
 #endif
