@@ -2,6 +2,7 @@
 #define queue_h
 
 #include <stdio.h>
+#include "rbt.h"
 
 typedef struct queue QUEUE;
 

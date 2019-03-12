@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "bst.h"
+#include "rbt.h"
 #include "queue.h"
 
 struct queue
