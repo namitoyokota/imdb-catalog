@@ -4,3 +4,5 @@
 main
 /test/*
 /ncurses-6.1/*
+/src/data/*
+*
