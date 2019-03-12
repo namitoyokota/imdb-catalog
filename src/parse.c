@@ -2,10 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "parse.h"
-#include "bst.h"
+#include "rbt.h"
 
-void parseFILE(char *tsvfile, NODE **bst_index, NODE **bst_title, NODE **bst_startYear, NODE **bst_endYear, NODE **bst_runtime) {
-
+void parseFILE(char *tsvfile, NODE** RBT) {
 	FILE *fp;
 	fp = fopen(tsvfile, "r");
 
@@ -15,7 +14,7 @@ void parseFILE(char *tsvfile, NODE **bst_index, NODE **bst_title, NODE **bst_sta
 	} else {
 		char line[300];
 		int row=0, col=0;
-		while (fgets(line, 300, fp) && row<11) {
+		while (fgets(line, 300, fp) && row < 15) {
 			if (row == 0) {
 				row++;
 				continue;
@@ -23,7 +22,7 @@ void parseFILE(char *tsvfile, NODE **bst_index, NODE **bst_title, NODE **bst_sta
 			strtok(line, "\n");
 			char *ptr = strdup(line);
 			char *word;
-			char *index, *type, *title, *adult, *startYear, *endYear, *runtime, *genres;
+			char *index, *title, *adult, *year, *runtime, *genres;
 
 			while ((word = strsep(&ptr, "\t"))) {
 				switch(col) {
@@ -34,7 +33,6 @@ void parseFILE(char *tsvfile, NODE **bst_index, NODE **bst_title, NODE **bst_sta
 						break;
 
 					case 1: // type
-						type = word;
 						break;
 
 					case 2: // title
@@ -49,11 +47,10 @@ void parseFILE(char *tsvfile, NODE **bst_index, NODE **bst_title, NODE **bst_sta
 						break;
 
 					case 5: // start year
-						startYear = word;
+						year = word;
 						break;
 
 					case 6: // end year
-						endYear = word;
 						break;
 
 					case 7: // runtime
@@ -74,12 +71,10 @@ void parseFILE(char *tsvfile, NODE **bst_index, NODE **bst_title, NODE **bst_sta
 				}
 				col++;
 			}
-			
-			*bst_index = insert(1, *bst_index, atoi(index), type, title, adult, startYear, endYear, runtime, genres);
-			*bst_title = insert(3, *bst_title, atoi(index), type, title, adult, startYear, endYear, runtime, genres);
-			*bst_startYear = insert(6, *bst_index, atoi(index), type, title, adult, startYear, endYear, runtime, genres);
-			*bst_endYear = insert(7, *bst_title, atoi(index), type, title, adult, startYear, endYear, runtime, genres);
-			*bst_runtime = insert(8, *bst_title, atoi(index), type, title, adult, startYear, endYear, runtime, genres);
+
+			*RBT = RB_insert(*RBT, '0', atoi(index), title, atoi(year), atoi(runtime), genres);
+
+			printf("%s\n",index);
 			row++;col=0;
 		}
 	}

@@ -5,6 +5,8 @@
         "string_view": "c",
         "data.h": "c",
         "stdio.h": "c",
-        "bst.h": "c"
+        "bst.h": "c",
+        "stdlib.h": "c",
+        "rbt.h": "c"
     }
 }

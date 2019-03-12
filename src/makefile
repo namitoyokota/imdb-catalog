@@ -1,4 +1,4 @@
-OBJS = main.o parse.o queue.o bst.o
+OBJS = main.o parse.o queue.o rbt.o
 OOPTS = -Wall -Wextra -g -c
 LOPTS = -Wall -Wextra -g
 
@@ -20,8 +20,8 @@ parse.o : parse.c parse.h
 queue.o : queue.c queue.h
 		gcc $(OOPTS) queue.c
 
-bst.o : bst.c bst.h
-		gcc $(OOPTS) bst.c
+rbt.o : rbt.c rbt.h
+		gcc $(OOPTS) rbt.c
 
 run : main
 		./main
