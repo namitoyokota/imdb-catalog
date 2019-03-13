@@ -1,21 +1,23 @@
-OBJS = main.o parse.o queue.o rbt.o
+OBJS = main.o queue.o rbt.o
 OOPTS = -Wall -Wextra -g -c
 LOPTS = -Wall -Wextra -g
 
 all : main
 
 main : $(OBJS)
-		gcc $(LOPTS) $(OBJS) -o main
+		gcc $(LOPTS) $(OBJS) -o main -lncurses
 
-n : n.c
-		cc -o n n.c -lncurses 
-		./n
+download : 
+		wget https://datasets.imdbws.com/title.basics.tsv.gz -P ./data/
+		gunzip ./data/title.basics.tsv.gz
+		grep "movie" ./data/title.basics.tsv > ./data/movie_records
+		rm ./data/title.basics.tsv
 
 main.o : main.c
 		gcc $(OOPTS) main.c
 
-parse.o : parse.c parse.h
-		gcc $(OOPTS) parse.c
+n.o : n.c n.h
+		gcc -o n n.c -lncurses
 
 queue.o : queue.c queue.h
 		gcc $(OOPTS) queue.c

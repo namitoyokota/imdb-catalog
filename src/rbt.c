@@ -188,7 +188,7 @@ void inorder(struct node *root)
         return;
 
     inorder(root->left);
-	printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+	printf("%s\n", root->title);
 	inorder(root->right);
 }
 
@@ -198,7 +198,7 @@ void outorder(struct node *root)
         return;
 
     outorder(root->right);
-	printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+	printf("%s\n", root->title);
 	outorder(root->left);
 }
 
