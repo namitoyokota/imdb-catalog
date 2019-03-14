@@ -36,6 +36,26 @@ int main(void) {
         //retrieveData(&RBT, "1000");
         updateData(&RBT, "1000", "Updated Movie Title", "1999", "30", "Fantasy");
         inorder(RBT);
+
+        printf("\n\n");
+        printf("deleted list\n");
+        inorder_deleted(RBT);
+
+        printf("\n\n");
+        printf("year greater than 1900\n");  
+        inorder_year_bigger(RBT, 1900);
+
+        printf("\n\n");
+        printf("runtime greater than 0\n");  
+        inorder_runtime_bigger(RBT, 0);
+
+        printf("\n\n");
+        printf("year smaller than 1900\n");  
+        inorder_year_smaller(RBT, 1900);
+
+        printf("\n\n");
+        printf("drama genre\n");  
+        inorder_genres(RBT, "Drama");
     }
 
     // curses ui
@@ -399,7 +419,7 @@ void parseFILE(char *tsvfile, NODE** RBT) {
 	} else {
 		char line[300];
 		int row=0, col=0;
-		while (fgets(line, 300, fp) && row < 30) {
+		while (fgets(line, 300, fp) && row < 100) {
 			if (row == 0) {
 				row++;
 				continue;

@@ -502,7 +502,6 @@ void inorder(NODE* root)
 {
     if(root==NULL)
         return;
-
     inorder(root->left);
 	printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
 	inorder(root->right);
@@ -512,10 +511,63 @@ void outorder(NODE* root)
 {
     if(root==NULL)
         return;
-
     outorder(root->right);
 	printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
 	outorder(root->left);
+}
+
+void inorder_deleted(NODE* root) {
+    if (root==NULL)
+        return;
+    inorder_deleted(root->left);
+    if (root->enable == 0)
+	    printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+    inorder_deleted(root->right);
+}
+
+void inorder_year_bigger(NODE* root, int year) {
+    if (root==NULL)
+        return;
+    inorder_year_bigger(root->left, year);
+    if (root->year > year)
+	    printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+    inorder_year_bigger(root->right, year);
+}
+
+void inorder_year_smaller(NODE* root, int year) {
+    if (root==NULL)
+        return;
+    inorder_year_smaller(root->left, year);
+    if (root->year < year)
+	    printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+    inorder_year_smaller(root->right, year);
+}
+
+void inorder_runtime_bigger(NODE* root, int runtime) {
+    if (root==NULL)
+        return;
+    inorder_runtime_bigger(root->left, runtime);
+    if (root->runtime > runtime)
+	    printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+    inorder_runtime_bigger(root->right, runtime);
+}
+
+void inorder_runtime_smaller(NODE* root, int runtime) {
+    if (root==NULL)
+        return;
+    inorder_runtime_smaller(root->left, runtime);
+    if (root->runtime < runtime)
+	    printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+    inorder_runtime_smaller(root->right, runtime);
+}
+
+void inorder_genres(NODE* root, char* genres) {
+     if (root==NULL)
+        return;
+    inorder_genres(root->left, genres);
+    if (strstr(root->genres,genres) != NULL)
+	    printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+    inorder_genres(root->right, genres);
 }
 
 // doesnt work

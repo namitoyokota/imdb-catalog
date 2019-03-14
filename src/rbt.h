@@ -20,6 +20,12 @@ NODE* RB_insert_runtime(NODE* T, bool enable, int index, char* title, int year, 
 NODE* RB_insert_genres(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres);
 void inorder(NODE* root);
 void outorder(NODE* root);
+void inorder_deleted(NODE*);
+void inorder_year_bigger(NODE* root, int year);
+void inorder_year_smaller(NODE* root, int year);
+void inorder_runtime_bigger(NODE* root, int runtime);
+void inorder_runtime_smaller(NODE* root, int runtime);
+void inorder_genres(NODE* root, char* genres);
 NODE* Tree_minimum(NODE* node);
 void RB_delete_fixup(NODE** T, NODE** x);
 void RB_transplat(NODE** T, NODE** u,NODE** v);
