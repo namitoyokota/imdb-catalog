@@ -140,6 +140,36 @@ void RB_insert_fixup(NODE** T, NODE** z)
 
 }
 
+void index_to_title(NODE* root, NODE** RBT_title)  {
+
+    if(root==NULL)
+        return;
+
+    index_to_title(root->left, RBT_title);
+    *RBT_title = RB_insert_title(*RBT_title, root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+	index_to_title(root->right, RBT_title);
+}
+
+void index_to_year(NODE* root, NODE** RBT_year)  {
+
+    if(root==NULL)
+        return;
+
+    index_to_year(root->left, RBT_year);
+    *RBT_year = RB_insert_year(*RBT_year, root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+	index_to_year(root->right, RBT_year);
+}
+
+void index_to_runtime(NODE* root, NODE** RBT_runtime)  {
+
+    if(root==NULL)
+        return;
+
+    index_to_runtime(root->left, RBT_runtime);
+    *RBT_runtime = RB_insert_runtime(*RBT_runtime, root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+	index_to_runtime(root->right, RBT_runtime);
+}
+
 NODE* RB_insert(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres)
 {
     NODE* z = (NODE*)malloc(sizeof(struct node));
@@ -182,24 +212,130 @@ NODE* RB_insert(NODE* T, bool enable, int index, char* title, int year, int runt
     return T;
 }
 
-void inorder(struct node *root)
+NODE* RB_insert_title(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres)
 {
-    if(root==NULL)
-        return;
+    NODE* z = (NODE*)malloc(sizeof(struct node));
+    z->enable = enable;
+    z->index = index;
+    z->title = title;
+    z->year = year;
+    z->runtime = runtime;
+    z->genres = genres;
+    z->left = NULL;
+    z->right = NULL;
+    z->parent = NULL;
+    z->color = RED;
 
-    inorder(root->left);
-	printf("%s\n", root->title);
-	inorder(root->right);
+    NODE* y = NULL;
+    NODE* x = T;//root
+
+    while(x!=NULL)
+    {
+        y = x;
+        if(strcmp(z->title,x->title) < 0)
+            x = x->left;
+
+        else
+            x = x->right;
+    }
+    z->parent = y;
+
+    if(y==NULL)
+        T = z;
+
+    else if(strcmp(z->title, y->title) < 0)
+        y->left = z;
+
+    else
+        y->right = z;
+
+    RB_insert_fixup(&T,&z);
+
+    return T;
 }
 
-void outorder(struct node *root)
+NODE* RB_insert_year(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres)
 {
-    if(root==NULL)
-        return;
+    NODE* z = (NODE*)malloc(sizeof(struct node));
+    z->enable = enable;
+    z->index = index;
+    z->title = title;
+    z->year = year;
+    z->runtime = runtime;
+    z->genres = genres;
+    z->left = NULL;
+    z->right = NULL;
+    z->parent = NULL;
+    z->color = RED;
 
-    outorder(root->right);
-	printf("%s\n", root->title);
-	outorder(root->left);
+    NODE* y = NULL;
+    NODE* x = T;//root
+
+    while(x!=NULL)
+    {
+        y = x;
+        if(z->year < x->year)
+            x = x->left;
+
+        else
+            x = x->right;
+    }
+    z->parent = y;
+
+    if(y==NULL)
+        T = z;
+
+    else if(z->year < y->year)
+        y->left = z;
+
+    else
+        y->right = z;
+
+    RB_insert_fixup(&T,&z);
+
+    return T;
+}
+
+NODE* RB_insert_runtime(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres)
+{
+    NODE* z = (NODE*)malloc(sizeof(struct node));
+    z->enable = enable;
+    z->index = index;
+    z->title = title;
+    z->year = year;
+    z->runtime = runtime;
+    z->genres = genres;
+    z->left = NULL;
+    z->right = NULL;
+    z->parent = NULL;
+    z->color = RED;
+
+    NODE* y = NULL;
+    NODE* x = T;//root
+
+    while(x!=NULL)
+    {
+        y = x;
+        if(z->runtime < x->runtime)
+            x = x->left;
+
+        else
+            x = x->right;
+    }
+    z->parent = y;
+
+    if(y==NULL)
+        T = z;
+
+    else if(z->runtime < y->runtime)
+        y->left = z;
+
+    else
+        y->right = z;
+
+    RB_insert_fixup(&T,&z);
+
+    return T;
 }
 
 NODE* Tree_minimum(NODE* node)
@@ -304,9 +440,9 @@ void RB_transplat(NODE** T, NODE** u,NODE** v)
         (*v)->parent = (*u)->parent;
 }
 
-NODE* RB_delete(struct node *T,NODE* z)
+NODE* RB_delete(NODE* T,NODE* z)
 {
-    struct node *y = z;
+    NODE* y = z;
     enum type yoc;
     yoc = z->color; // y's original color
 
@@ -356,25 +492,46 @@ NODE* BST_search(NODE* root, int x)
 {
     if(root==NULL || root->index == x)
         return root;
-
-    if(root->index > x)
+    else if (root->index > x)
        return  BST_search(root->left,x);
     else
         return BST_search(root->right,x);
 }
 
+void inorder(NODE* root)
+{
+    if(root==NULL)
+        return;
+
+    inorder(root->left);
+	printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+	inorder(root->right);
+}
+
+void outorder(NODE* root)
+{
+    if(root==NULL)
+        return;
+
+    outorder(root->right);
+	printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+	outorder(root->left);
+}
+
 // doesnt work
 NODE* search_title(NODE* root, char* str) {
 
-    printf("%s %s", root->title, str);
-
     if(root==NULL || strcmp(root->title,str)==0)
         return root;
-
-    if(root->title > str)
+    else if (strcmp(root->title, str) > 0)
         return  search_title(root->left,str);
     else
         return search_title(root->right,str);
+}
+
+void printNode(NODE* root) {
+    if (root != NULL)
+	    printf("%d\t%d\t%s\t%d\t%d\t%s\n\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
 }
 
 // update

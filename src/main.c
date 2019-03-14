@@ -3,6 +3,7 @@
 #include <curses.h>
 #include <string.h>
 #include "rbt.h"
+#include "crud.h"
 
 void curseMenu();
 int mainMenu(int, int);
@@ -15,23 +16,29 @@ int updateMenu(int, int);
 int deleteMenu(int, int);
 int helpMenu(int, int);
 NODE* loadMenu(int, int);
+void clearBox(WINDOW*, int, int);
 void parseFILE(char*, NODE**);
 
 int main(void) {
 
     int opt = 0;
 
+    // console ui
     if (opt == 0) {
-        // terminal
+        printf("sorted by index\n");
         NODE* RBT = NULL;
         parseFILE("./data/movie_records", &RBT);
         inorder(RBT);
 
-        NODE* result = BST_search(RBT, 630);
-        RB_delete(result, RBT);
-        //inorder(RBT);
+        printf("\n\n");
+        createData(&RBT, "1000", "Title of the New Movie", "2019", "90", "Comedy");
+        deleteData(&RBT, "1000");
+        //retrieveData(&RBT, "1000");
+        updateData(&RBT, "1000", "Updated Movie Title", "1999", "30", "Fantasy");
+        inorder(RBT);
     }
 
+    // curses ui
     else {
         initscr();
         noecho();
@@ -203,29 +210,108 @@ int filterMenu(NODE* RBT, int yMax, int xMax) {
 }
 
 int searchMenu(NODE* RBT, int yMax, int xMax) {
-    int t = yMax + xMax;
+
+    char* choices[5] = {"By Index", "By Title", "By Year", "By Runtime", "Back"};
+    int choice;
+    int highlight = 1;
 
     WINDOW* search = newwin(yMax, xMax, 0, 0);
     box(search, 0,0);
     wrefresh(search);
     keypad(search, true);
 
-    mvwprintw(search, 0, 0, "Search Menu");
-    mvwprintw(search, 2, 1, "Search : ");
-    char s = mvwgetch(search, 2, 10);
-    mvwprintw(search, 2, 10, "%c", s);
+    echo();
 
-    NODE* result = BST_search(RBT, 335);
-    update_index(result, 100);
+    mvwprintw(search, 0, 0, "Search Menu");
+
+    while(1) {
+        // print highlight
+        for (int i=1; i<=5; i++) {
+            if (i == highlight)
+                wattron(search, A_REVERSE);
+            mvwprintw(search, i+1, 2, choices[i-1]);
+            wattroff(search, A_REVERSE);
+        }
+        choice = wgetch(search);
+
+        // switch up and down
+        switch(choice) {
+            case KEY_UP:
+                highlight--;
+                if (highlight == 0)
+                    highlight = 1;
+                break;
+            case KEY_DOWN:
+                highlight++;
+                if (highlight == 6)
+                    highlight = 5;
+                break;
+            default:
+                break;
+        }
+
+        // on the press of 'enter'
+        if (choice == 10)
+            break;
+    }
+
+    switch(highlight-1) {
+        case 0:
+            clearBox(search, yMax, xMax);
+            mvwprintw(search, 2, 1, "Index : ");   
+            break;
+        case 1:
+            clearBox(search, yMax, xMax);
+            mvwprintw(search, 2, 1, "Title : "); 
+            break;
+        case 2:
+            clearBox(search, yMax, xMax);
+            mvwprintw(search, 2, 1, "Year : "); 
+            break;
+        case 3:
+            clearBox(search, yMax, xMax);
+            mvwprintw(search, 2, 1, "Runtime : "); 
+            break;
+        case 4:
+            return 0;
+            break;
+        default:
+            break;
+    }
+
+    char str[30];
+    wgetstr(search, str);
+
+    NODE* result = BST_search(RBT, atoi(str));
+    //update_index(result, 100);
 
     wgetch(search);
 
-    return t;
+    return 0;
 }
 
 int createMenu(int yMax, int xMax) {
-    int t = yMax + xMax;
-    return t;
+
+    WINDOW* create = newwin(yMax, xMax, 0, 0);
+    box(create, 0,0);
+    wrefresh(create);
+    keypad(create, true);
+
+    char index[10], title[30], year[10], runtime[10], genres[30];
+
+    mvwprintw(create, 0, 0, "Create Menu");
+    mvwprintw(create, 2, 1, "Index : ");
+    wgetstr(create, index);
+    mvwprintw(create, 3, 1, "Title : ");
+    wgetstr(create, title);
+    mvwprintw(create, 4, 1, "Year : ");
+    wgetstr(create, year);
+    mvwprintw(create, 5, 1, "Runtime : ");
+    wgetstr(create, runtime);
+    mvwprintw(create, 6, 1, "Generes : ");
+    wgetstr(create, genres);
+
+    return 0;
 }
 
 int retrieveMenu(int yMax, int xMax) {
@@ -290,6 +376,17 @@ int helpMenu(int yMax, int xMax) {
     endwin();
 
     return 0;
+}
+
+void clearBox(WINDOW* win, int yMax, int xMax) {
+
+    for (int j=1; j<yMax-1; j++) {
+        for (int i=1; i<xMax-1; i++) {
+            mvwprintw(win, j, i, " ");
+        }
+    }
+
+    return;
 }
 
 void parseFILE(char *tsvfile, NODE** RBT) {
@@ -360,7 +457,7 @@ void parseFILE(char *tsvfile, NODE** RBT) {
 				col++;
 			}
 
-			*RBT = RB_insert(*RBT, '0', atoi(index), title, atoi(year), atoi(runtime), genres);
+			*RBT = RB_insert(*RBT, '1', atoi(index), title, atoi(year), atoi(runtime), genres);
 
 			row++;col=0;
 		}
