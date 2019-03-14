@@ -1,4 +1,4 @@
-OBJS = main.o queue.o rbt.o
+OBJS = main.o queue.o rbt.o crud.o
 OOPTS = -Wall -Wextra -g -c
 LOPTS = -Wall -Wextra -g
 
@@ -24,6 +24,9 @@ queue.o : queue.c queue.h
 
 rbt.o : rbt.c rbt.h
 		gcc $(OOPTS) rbt.c
+
+crud.o : crud.c crud.h
+		gcc $(OOPTS) crud.c
 
 run : main
 		./main
