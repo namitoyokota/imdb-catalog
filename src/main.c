@@ -5,19 +5,31 @@
 #include "rbt.h"
 #include "crud.h"
 
-void curseMenu();
+// MENU
 int mainMenu(int, int);
-int sortMenu(NODE*, int, int);
-int filterMenu(NODE*, int, int);
-int searchMenu(NODE*, int, int);
-int createMenu(int, int);
-int retrieveMenu(int, int);
-int updateMenu(int, int);
-int deleteMenu(int, int);
-int helpMenu(int, int);
 NODE* loadMenu(int, int);
+    // sort, filter, search
+    int sortMenu(NODE*, int, int);
+    int filterMenu(NODE*, int, int);
+    int searchMenu(NODE*, int, int);
+    // CRUD
+    int createMenu(int, int);
+    int retrieveMenu(int, int);
+    int updateMenu(int, int);
+    int deleteMenu(int, int);
+    // other
+    int helpMenu(int, int);
+// CURSES
+void curseMenu();
 void clearBox(WINDOW*, int, int);
+// FILE IO
 void parseFILE(char*, NODE**);
+
+
+
+
+
+
 
 int main(void) {
 
@@ -25,37 +37,39 @@ int main(void) {
 
     // console ui
     if (opt == 0) {
-        printf("sorted by index\n");
         NODE* RBT = NULL;
         parseFILE("./data/movie_records", &RBT);
-        inorder(RBT);
 
-        printf("\n\n");
-        createData(&RBT, "1000", "Title of the New Movie", "2019", "90", "Comedy");
-        deleteData(&RBT, "1000");
-        //retrieveData(&RBT, "1000");
-        updateData(&RBT, "1000", "Updated Movie Title", "1999", "30", "Fantasy");
-        inorder(RBT);
+        printf("\nadded 1000\n");
+        CREATE_MOVIE(&RBT, "1000", "Title of the New Movie", "2019", "90", "Comedy");
+        INORDER_TREE_WALK(RBT);
 
-        printf("\n\n");
-        printf("deleted list\n");
-        inorder_deleted(RBT);
+        printf("\ndeleting 335\n");
+        DELETE_MOVIE(&RBT, "335");
+        printf("\nupdating 502\n");
+        UPDATE_MOVIE(&RBT, "502", "Namito", "1999", "90", "Comedy,Fantasy");
 
-        printf("\n\n");
-        printf("year greater than 1900\n");  
-        inorder_year_bigger(RBT, 1900);
+        /*
+        printf("\n\ndeleted list\n");
+        INORDER_TREE_WALK_DELETED(RBT);
 
-        printf("\n\n");
-        printf("runtime greater than 0\n");  
-        inorder_runtime_bigger(RBT, 0);
+        printf("\n\nyear greater than 1900\n");  
+        INORDER_TREE_WALK_YEAR_BIGGER(RBT, 1900);
 
-        printf("\n\n");
-        printf("year smaller than 1900\n");  
-        inorder_year_smaller(RBT, 1900);
+        printf("\n\nruntime greater than 0\n");  
+        INORDER_TREE_WALK_YEAR_BIGGER(RBT, 0);
 
-        printf("\n\n");
-        printf("drama genre\n");  
-        inorder_genres(RBT, "Drama");
+        printf("\n\nyear smaller than 1900\n");  
+        INORDER_TREE_WALK_YEAR_SMALLER(RBT, 1900);
+
+        printf("\n\ndrama genre\n");  
+        INORDER_TREE_WALK_GENRES(RBT, "Drama");
+        */
+
+        printf("\ndelete 1000\n");
+        NODE* search = TREE_SEARCH_INDEX(RBT, 1000);
+        RBT = RB_DELETE(RBT, search);
+        INORDER_TREE_WALK(RBT);
     }
 
     // curses ui
@@ -66,12 +80,10 @@ int main(void) {
 
         int yMax, xMax;
         getmaxyx(stdscr, yMax, xMax);
-
         NODE* RBT = loadMenu(yMax, xMax);
 
         while(1) {
             int choice = mainMenu(yMax, xMax);
-
             switch(choice) {
                 case 0:
                     sortMenu(RBT, yMax, xMax);
@@ -92,8 +104,6 @@ int main(void) {
             }
         }
     }
-
-
     return 0;
 }
 
@@ -195,7 +205,7 @@ int sortMenu(NODE* RBT, int yMax, int xMax) {
 
     switch(highlight-1) {
         case 0:
-            inorder(RBT);
+            INORDER_TREE_WALK(RBT);
             wgetch(sort);
             break;
         case 1:
@@ -222,9 +232,6 @@ int sortMenu(NODE* RBT, int yMax, int xMax) {
 
 int filterMenu(NODE* RBT, int yMax, int xMax) {
     int t = yMax + xMax;
-
-    NODE* result = BST_search(RBT, 335);
-    update_index(result, 100);
 
     return t;
 }
@@ -302,16 +309,10 @@ int searchMenu(NODE* RBT, int yMax, int xMax) {
     char str[30];
     wgetstr(search, str);
 
-    NODE* result = BST_search(RBT, atoi(str));
-    //update_index(result, 100);
-
-    wgetch(search);
-
     return 0;
 }
 
 int createMenu(int yMax, int xMax) {
-
     WINDOW* create = newwin(yMax, xMax, 0, 0);
     box(create, 0,0);
     wrefresh(create);
@@ -350,7 +351,6 @@ int deleteMenu(int yMax, int xMax) {
 }
 
 NODE* loadMenu(int yMax, int xMax) {
-
     WINDOW* load = newwin(yMax, xMax, 0, 0);
     box(load, 0,0);
     wrefresh(load);
@@ -374,7 +374,6 @@ NODE* loadMenu(int yMax, int xMax) {
 }
 
 int helpMenu(int yMax, int xMax) {
-
     WINDOW* help = newwin(yMax, xMax, 0, 0);
     box(help, 0,0);
     wrefresh(help);
@@ -399,87 +398,37 @@ int helpMenu(int yMax, int xMax) {
 }
 
 void clearBox(WINDOW* win, int yMax, int xMax) {
-
     for (int j=1; j<yMax-1; j++) {
         for (int i=1; i<xMax-1; i++) {
             mvwprintw(win, j, i, " ");
         }
     }
-
     return;
 }
 
 void parseFILE(char *tsvfile, NODE** RBT) {
-	FILE *fp;
-	fp = fopen(tsvfile, "r");
-
-	if (fp == 0) {
-		printf("Error\n");
-		return;
-	} else {
-		char line[300];
-		int row=0, col=0;
-		while (fgets(line, 300, fp) && row < 100) {
-			if (row == 0) {
-				row++;
-				continue;
-			}
+	FILE *fp = fopen(tsvfile, "r");
+	if (fp == 0) printf("Error\n");
+	else {
+		char line[300]; int row=0, col=0;
+		while (fgets(line, 300, fp) && row < 10) {
 			strtok(line, "\n");
-			char *ptr = strdup(line);
-			char *word;
-			char *index, *title, *adult, *year, *runtime, *genres;
-
+			char *ptr = strdup(line), *word, *index, *title, *year, *runtime, *genres;
 			while ((word = strsep(&ptr, "\t"))) {
 				switch(col) {
-					case 0: // index
-						word[0]='0';
-						word[1]='0';
-						index = word;
-						break;
-
-					case 1: // type
-						break;
-
-					case 2: // title
-						title = word;
-						break;
-
-					case 3: // title 2
-						break;
-
-					case 4: // is adult
-						adult = word;
-						break;
-
-					case 5: // start year
-						year = word;
-						break;
-
-					case 6: // end year
-						break;
-
-					case 7: // runtime
-						runtime = word;
-						break;
-
-					case 8: // genres
-						genres = word;
-						break;
-					
-					default:
-						break;
+					case 0: word[0]='0'; word[1]='0'; index = word; break;
+					case 2: title = word; break;
+					case 5: year = word; break;
+					case 7: runtime = word; break;
+					case 8: genres = word; break;
+					default: break;
 				}
-
-				if (strcmp(word, "\0") == 0) {
-					break;
-				} else {
-				}
+				if (strcmp(word, "\0") == 0) break;
 				col++;
 			}
-
-			*RBT = RB_insert(*RBT, '1', atoi(index), title, atoi(year), atoi(runtime), genres);
-
-			row++;col=0;
+			*RBT = RB_INSERT_INDEX(*RBT, '1', atoi(index), title, atoi(year), atoi(runtime), genres);
+			row++; col=0;
 		}
 	}
+    fclose(fp);
 }
