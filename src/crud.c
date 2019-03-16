@@ -2,58 +2,31 @@
 #include <string.h>
 #include "rbt.h"
 
-void createData(NODE** root, char* index, char* title, char* year, char* runtime, char* genres) {
-
-    *root = RB_insert(*root, '1', atoi(index), title, atoi(year), atoi(runtime), genres);
-
-    return;
+void CREATE_MOVIE(NODE** root, char* index, char* title, char* year, char* runtime, char* genres) {
+    *root = RB_INSERT_INDEX(*root, 1, atoi(index), title, atoi(year), atoi(runtime), genres);
 }
 
-void retrieveData(NODE** root, char* index) {
-
-    NODE* search = NULL;
-    search = BST_search(*root, atoi(index));
-
-    if (search == NULL) {
-        printf("Error. A movie with the inputted index does not exist");
-        return;
-    } else {
-        update_enable(search, 1);
-        return;
-    }
+void RETRIEVE_MOVIE(NODE** root, char* index) {
+    NODE* search = TREE_SEARCH_INDEX(*root, atoi(index));
+    if (search == NULL) printf("Error. A movie with the inputted index does not exist");
+    else RBT_MODIFY(search, 1, "", "", "", "", "");
 }
 
-void updateData(NODE** root, char* index, char* title, char* year, char* runtime, char* genres) {
-
-    NODE* search = NULL;
-    search = BST_search(*root, atoi(index));
-
-    if (search == NULL) {
+void UPDATE_MOVIE(NODE** root, char* index, char* title, char* year, char* runtime, char* genres) {
+    NODE* search = TREE_SEARCH_INDEX(*root, atoi(index));
+    if (search == NULL)  {
         printf("Error. A movie with the inputted index does not exist\n\n");
-        return;
     } else {
-        if (strcmp(title, "") != 0)
-            update_title(search, title);
-        if (strcmp(year, "") != 0)
-            update_year(search, atoi(year));
-        if (strcmp(runtime, "") != 0)
-            update_runtime(search, atoi(runtime));
-        if (strcmp(genres, "") != 0)
-            update_genres(search, genres);
-        return;
+        RBT_MODIFY(search, 1, index, title, year, runtime, genres);
+        // if index is ever changed, the node should be deleted then inserted again to sort in the right location
+        //*root = RB_DELETE(*root, search);
+        //*root = RB_INSERT_INDEX(*root, 1, atoi(index), title, atoi(year), atoi(runtime), genres);
     }
 }
 
-void deleteData(NODE** root, char* index) {
-
+void DELETE_MOVIE(NODE** root, char* index) {
     NODE* search = NULL;
-    search = BST_search(*root, atoi(index));
-
-    if (search == NULL) {
-        printf("Error. A movie with the inputted index does not exist\n\n");
-        return;
-    } else {
-        update_enable(search, 0);
-        return;
-    }
+    search = TREE_SEARCH_INDEX(*root, atoi(index));
+    if (search == NULL) printf("Error. A movie with the inputted index does not exist\n\n");
+    else RBT_MODIFY(search, 0, "", "", "", "", "");
 }
