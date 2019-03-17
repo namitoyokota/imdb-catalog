@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <curses.h>
 #include <string.h>
+#include <time.h>
 #include "rbt.h"
 #include "crud.h"
 
@@ -19,9 +20,7 @@ NODE* loadMenu(int, int);
     int deleteMenu(int, int);
     // other
     int helpMenu(int, int);
-// CURSES
-void curseMenu();
-void clearBox(WINDOW*, int, int);
+    void clearBox(WINDOW*, int, int);
 // FILE IO
 void parseFILE(char*, NODE**);
 
@@ -41,13 +40,14 @@ int main(void) {
         parseFILE("./data/movie_records", &RBT);
 
         printf("\nadded 1000\n");
-        CREATE_MOVIE(&RBT, "1000", "Title of the New Movie", "2019", "90", "Comedy");
+        CREATE_MOVIE(&RBT, "1000", "Title of the New Movie", "2019", "90", "Comedy", "DVD", 10, 30, 2018);
         INORDER_TREE_WALK(RBT);
 
         printf("\ndeleting 335\n");
         DELETE_MOVIE(&RBT, "335");
         printf("\nupdating 502\n");
-        UPDATE_MOVIE(&RBT, "502", "Namito", "1999", "90", "Comedy,Fantasy");
+        UPDATE_MOVIE(&RBT, "502", "Namito", "1999", "90", "Comedy,Fantasy", "BluRay", 8, 13, 1999);
+        INORDER_TREE_WALK(RBT);
 
         /*
         printf("\n\ndeleted list\n");
@@ -65,11 +65,6 @@ int main(void) {
         printf("\n\ndrama genre\n");  
         INORDER_TREE_WALK_GENRES(RBT, "Drama");
         */
-
-        printf("\ndelete 1000\n");
-        NODE* search = TREE_SEARCH_INDEX(RBT, 1000);
-        RBT = RB_DELETE(RBT, search);
-        INORDER_TREE_WALK(RBT);
     }
 
     // curses ui
@@ -410,11 +405,12 @@ void parseFILE(char *tsvfile, NODE** RBT) {
 	FILE *fp = fopen(tsvfile, "r");
 	if (fp == 0) printf("Error\n");
 	else {
+        time_t t = time(NULL); struct tm tm = *localtime(&t);
 		char line[300]; int row=0, col=0;
 		while (fgets(line, 300, fp) && row < 10) {
-			strtok(line, "\n");
-			char *ptr = strdup(line), *word, *index, *title, *year, *runtime, *genres;
+			strtok(line, "\n"); char *ptr = strdup(line), *word, *index, *title, *year, *runtime, *genres;
 			while ((word = strsep(&ptr, "\t"))) {
+                if (strcmp(word, "\\N") == 0) word = "(null)";
 				switch(col) {
 					case 0: word[0]='0'; word[1]='0'; index = word; break;
 					case 2: title = word; break;
@@ -426,7 +422,7 @@ void parseFILE(char *tsvfile, NODE** RBT) {
 				if (strcmp(word, "\0") == 0) break;
 				col++;
 			}
-			*RBT = RB_INSERT_INDEX(*RBT, '1', atoi(index), title, atoi(year), atoi(runtime), genres);
+			*RBT = RB_INSERT_INDEX(*RBT, '1', atoi(index), title, atoi(year), atoi(runtime), genres, NULL, tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900);
 			row++; col=0;
 		}
 	}

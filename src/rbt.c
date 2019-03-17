@@ -18,69 +18,72 @@ struct node {
     char* title;
     int year;
     int runtime;
-    char *genres;
+    char* genres;
+    char* media;
+    int m;
+    int d;
+    int y;
 };
 
 // MAIN
-void LEFT_ROTATE(NODE** T,NODE** x) {
-    NODE* y = (*x)->right;
-    (*x)->right = y->left;
-    if (y->left!=NULL)
-        y->left->parent = *x;
-    y->parent = (*x)->parent;
-    if ((*x)->parent == NULL)
-        *T = y;
-    else if(*x == (*x)->parent->left)
-        (*x)->parent->left = y;
-    else (*x)->parent->right = y;
-    y->left = *x;
-    (*x)->parent = y;
+void LEFT_ROTATE(NODE** T,NODE** X) {
+    NODE* Y = (*X)->right;
+    (*X)->right = Y->left;
+    if (Y->left != NULL)
+        Y->left->parent = *X;
+    Y->parent = (*X)->parent;
+    if ((*X)->parent == NULL)
+        *T = Y;
+    else if(*X == (*X)->parent->left)
+        (*X)->parent->left = Y;
+    else (*X)->parent->right = Y;
+    Y->left = *X;
+    (*X)->parent = Y;
 }
-void RIGHT_ROTATE(NODE** T,NODE** x) {
-    NODE* y = (*x)->left;
-    (*x)->left = y->right;
-    if (y->right!=NULL)
-        y->right->parent = *x;
-    y->parent = (*x)->parent;
-    if ((*x)->parent==NULL)
-        *T = y;
-    else if ((*x)== (*x)->parent->left)
-        (*x)->parent->left = y;
-    else (*x)->parent->right = y;
-    y->right = *x;
-    (*x)->parent = y;
+void RIGHT_ROTATE(NODE** T,NODE** X) {
+    NODE* Y = (*X)->left;
+    (*X)->left = Y->right;
+    if (Y->right != NULL)
+        Y->right->parent = *X;
+    Y->parent = (*X)->parent;
+    if ((*X)->parent==NULL)
+        *T = Y;
+    else if ((*X)== (*X)->parent->left)
+        (*X)->parent->left = Y;
+    else (*X)->parent->right = Y;
+    Y->right = *X;
+    (*X)->parent = Y;
 }
 NODE* TREE_MINIMUM(NODE* node) {
-    while (node->left!=NULL)
+    while (node->left != NULL)
         node = node->left;
     return node;
 }
 
 // INSERT
-void RB_INSERT_FIXUP(NODE** T, NODE** z) {
+void RB_INSERT_FIXUP(NODE** T, NODE** Z) {
     NODE* grandparent = NULL;
     NODE* parentpt = NULL;
-
-    while (((*z)!=*T)&& ((*z)->color!= BLACK) && ((*z)->parent->color == RED)) {
-        parentpt = (*z)->parent;
-        grandparent = (*z)->parent->parent;
+    while (((*Z)!=*T) && ((*Z)->color!= BLACK) && ((*Z)->parent->color == RED)) {
+        parentpt = (*Z)->parent;
+        grandparent = (*Z)->parent->parent;
         if (parentpt == grandparent->left) {
             NODE* uncle = grandparent->right;
             if (uncle!=NULL && uncle->color == RED) {
                 grandparent->color = RED;
                 parentpt->color = BLACK;
                 uncle->color = BLACK;
-                *z = grandparent;
+                *Z = grandparent;
             } else {
-                if ((*z) == parentpt->right) {
+                if ((*Z) == parentpt->right) {
                     LEFT_ROTATE(T,&parentpt);
-                    (*z) = parentpt;
-                    parentpt = (*z)->parent;
+                    (*Z) = parentpt;
+                    parentpt = (*Z)->parent;
                 }
                 RIGHT_ROTATE(T,&grandparent);
                 parentpt->color = BLACK;
                 grandparent->color = RED;
-                (*z) = parentpt;
+                (*Z) = parentpt;
             }
         } else {
             NODE* uncle = grandparent->left;
@@ -88,249 +91,268 @@ void RB_INSERT_FIXUP(NODE** T, NODE** z) {
                 grandparent->color = RED;
                 parentpt->color = BLACK;
                 uncle->color = BLACK;
-                (*z) = grandparent;
+                (*Z) = grandparent;
             } else {
-                if ((*z) == parentpt->left) {
+                if ((*Z) == parentpt->left) {
                     RIGHT_ROTATE(T,&parentpt);
-                    (*z) = parentpt;
-                    parentpt = (*z)->parent;
+                    (*Z) = parentpt;
+                    parentpt = (*Z)->parent;
                 }
                 LEFT_ROTATE(T,&grandparent);
                 parentpt->color = BLACK;
                 grandparent->color = RED;
-                (*z) = parentpt;
+                (*Z) = parentpt;
             }
         }
     }
     (*T)->color = BLACK;
 }
-NODE* RB_INSERT_INDEX(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres) {
-    NODE* z = (NODE*)malloc(sizeof(struct node));
-    z->enable = enable;
-    z->index = index;
-    z->title = title;
-    z->year = year;
-    z->runtime = runtime;
-    z->genres = genres;
-    z->left = NULL;
-    z->right = NULL;
-    z->parent = NULL;
-    z->color = RED;
+NODE* RB_INSERT_INDEX(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres, char* media, int m, int d, int y) {
+    NODE* Z = (NODE*)malloc(sizeof(struct node));
+    Z->enable = enable;
+    Z->index = index;
+    Z->title = title;
+    Z->year = year;
+    Z->runtime = runtime;
+    Z->genres = genres;
+    Z->media = media;
+    Z->m = m;
+    Z->d = d;
+    Z->y = y;
 
-    NODE* y = NULL;
-    NODE* x = T;//root
+    Z->left = NULL;
+    Z->right = NULL;
+    Z->parent = NULL;
+    Z->color = RED;
 
-    while (x!=NULL) {
-        y = x;
-        if(z->index < x->index)
-            x = x->left;
+    NODE* Y = NULL;
+    NODE* X = T;
+
+    while (X != NULL) {
+        Y = X;
+        if(Z->index < X->index)
+            X = X->left;
         else
-            x = x->right;
+            X = X->right;
     }
-    z->parent = y;
-    if (y==NULL)
-        T = z;
-    else if (z->index < y->index)
-        y->left = z;
+    Z->parent = Y;
+    if (Y == NULL)
+        T = Z;
+    else if (Z->index < Y->index)
+        Y->left = Z;
     else
-        y->right = z;
-    RB_INSERT_FIXUP(&T,&z);
+        Y->right = Z;
+    RB_INSERT_FIXUP(&T,&Z);
     return T;
 }
-NODE* RB_INSERT_TITLE(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres) {
-    NODE* z = (NODE*)malloc(sizeof(struct node));
-    z->enable = enable;
-    z->index = index;
-    z->title = title;
-    z->year = year;
-    z->runtime = runtime;
-    z->genres = genres;
-    z->left = NULL;
-    z->right = NULL;
-    z->parent = NULL;
-    z->color = RED;
+NODE* RB_INSERT_TITLE(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres, char* media, int m, int d, int y) {
+    NODE* Z = (NODE*)malloc(sizeof(struct node));
+    Z->enable = enable;
+    Z->index = index;
+    Z->title = title;
+    Z->year = year;
+    Z->runtime = runtime;
+    Z->genres = genres;
+    Z->media = media;
+    Z->m = m;
+    Z->d = d;
+    Z->y = y;
 
-    NODE* y = NULL;
-    NODE* x = T;//root
+    Z->left = NULL;
+    Z->right = NULL;
+    Z->parent = NULL;
+    Z->color = RED;
 
-    while (x!=NULL) {
-        y = x;
-        if (strcmp(z->title,x->title) < 0)
-            x = x->left;
+    NODE* Y = NULL;
+    NODE* X = T;
 
+    while (X != NULL) {
+        Y = X;
+        if (strcmp(Z->title, X->title) < 0)
+            X = X->left;
         else
-            x = x->right;
+            X = X->right;
     }
-    z->parent = y;
-    if (y==NULL)
-        T = z;
-    else if (strcmp(z->title, y->title) < 0)
-        y->left = z;
+    Z->parent = Y;
+    if (Y == NULL)
+        T = Z;
+    else if (strcmp(Z->title, Y->title) < 0)
+        Y->left = Z;
     else
-        y->right = z;
-    RB_INSERT_FIXUP(&T,&z);
+        Y->right = Z;
+    RB_INSERT_FIXUP(&T,&Z);
     return T;
 }
-NODE* RB_INSERT_YEAR(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres) {
-    NODE* z = (NODE*)malloc(sizeof(struct node));
-    z->enable = enable;
-    z->index = index;
-    z->title = title;
-    z->year = year;
-    z->runtime = runtime;
-    z->genres = genres;
-    z->left = NULL;
-    z->right = NULL;
-    z->parent = NULL;
-    z->color = RED;
+NODE* RB_INSERT_YEAR(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres, char* media, int m, int d, int y) {
+    NODE* Z = (NODE*)malloc(sizeof(struct node));
+    Z->enable = enable;
+    Z->index = index;
+    Z->title = title;
+    Z->year = year;
+    Z->runtime = runtime;
+    Z->genres = genres;
+    Z->media = media;
+    Z->m = m;
+    Z->d = d;
+    Z->y = y;
 
-    NODE* y = NULL;
-    NODE* x = T;//root
+    Z->left = NULL;
+    Z->right = NULL;
+    Z->parent = NULL;
+    Z->color = RED;
 
-    while (x!=NULL) {
-        y = x;
-        if(z->year < x->year)
-            x = x->left;
+    NODE* Y = NULL;
+    NODE* X = T;
+
+    while (X != NULL) {
+        Y = X;
+        if(Z->year < X->year)
+            X = X->left;
         else
-            x = x->right;
+            X = X->right;
     }
-    z->parent = y;
-    if (y==NULL)
-        T = z;
-    else if (z->year < y->year)
-        y->left = z;
+    Z->parent = Y;
+    if (Y == NULL)
+        T = Z;
+    else if (Z->year < Y->year)
+        Y->left = Z;
     else
-        y->right = z;
-    RB_INSERT_FIXUP(&T,&z);
+        Y->right = Z;
+    RB_INSERT_FIXUP(&T,&Z);
     return T;
 }
-NODE* RB_INSERT_RUNTIME(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres) {
-    NODE* z = (NODE*)malloc(sizeof(struct node));
-    z->enable = enable;
-    z->index = index;
-    z->title = title;
-    z->year = year;
-    z->runtime = runtime;
-    z->genres = genres;
-    z->left = NULL;
-    z->right = NULL;
-    z->parent = NULL;
-    z->color = RED;
+NODE* RB_INSERT_RUNTIME(NODE* T, bool enable, int index, char* title, int year, int runtime, char *genres, char* media, int m, int d, int y) {
+    NODE* Z = (NODE*)malloc(sizeof(struct node));
+    Z->enable = enable;
+    Z->index = index;
+    Z->title = title;
+    Z->year = year;
+    Z->runtime = runtime;
+    Z->genres = genres;
+    Z->media = media;
+    Z->m = m;
+    Z->d = d;
+    Z->y = y;
 
-    NODE* y = NULL;
-    NODE* x = T;//root
+    Z->left = NULL;
+    Z->right = NULL;
+    Z->parent = NULL;
+    Z->color = RED;
 
-    while (x!=NULL) {
-        y = x;
-        if(z->runtime < x->runtime)
-            x = x->left;
+    NODE* Y = NULL;
+    NODE* X = T;
+
+    while (X != NULL) {
+        Y = X;
+        if(Z->runtime < X->runtime)
+            X = X->left;
         else
-            x = x->right;
+            X = X->right;
     }
-    z->parent = y;
-    if (y==NULL)
-        T = z;
-    else if (z->runtime < y->runtime)
-        y->left = z;
+    Z->parent = Y;
+    if (Y == NULL)
+        T = Z;
+    else if (Z->runtime < Y->runtime)
+        Y->left = Z;
     else
-        y->right = z;
-    RB_INSERT_FIXUP(&T,&z);
+        Y->right = Z;
+    RB_INSERT_FIXUP(&T,&Z);
     return T;
 }
 
 // DELETE
-void RB_TRANSPLANT(NODE** T, NODE** u, NODE** v) {
-    if ((*u)->parent == NULL)
-        *T = *v;
-    else if ((*u)==(*u)->parent->left)
-        (*u)->parent->left = *v;
-    else (*u)->parent->right = *v;
-    if ((*v)!=NULL) 
-        (*v)->parent = (*u)->parent;
+void RB_TRANSPLANT(NODE** T, NODE** U, NODE** V) {
+    if ((*U)->parent == NULL)
+        *T = *V;
+    else if ((*U)==(*U)->parent->left)
+        (*U)->parent->left = *V;
+    else (*U)->parent->right = *V;
+    if ((*V)!=NULL) 
+        (*V)->parent = (*U)->parent;
 }
-void RB_DELETE_FIXUP(NODE** T, NODE** x) {
-    while((*x)!=*T && (*x)->color == BLACK) {
-        if((*x)==(*x)->parent->left) {
-            NODE* w = (*x)->parent->right;
-            if (w->color==RED) {
-                w->color = BLACK;
-                (*x)->parent->color = BLACK;
-                LEFT_ROTATE(T,&((*x)->parent));
-                w = (*x)->parent->right;
+void RB_DELETE_FIXUP(NODE** T, NODE** X) {
+    while((*X) != *T && (*X)->color == BLACK) {
+        if((*X) == (*X)->parent->left) {
+            NODE* W = (*X)->parent->right;
+            if (W->color == RED) {
+                W->color = BLACK;
+                (*X)->parent->color = BLACK;
+                LEFT_ROTATE(T, &((*X)->parent));
+                W = (*X)->parent->right;
             }
-            if (w->left->color==BLACK && w->right->color == BLACK) {
-                w->color = RED;
-                (*x) = (*x)->parent;
+            if (W->left->color == BLACK && W->right->color == BLACK) {
+                W->color = RED;
+                (*X) = (*X)->parent;
             } else {
-                if (w->right->color == BLACK) {
-                    w->left->color = BLACK;
-                    w->color = RED;
-                    RIGHT_ROTATE(T,&w);
-                    w = (*x)->parent->right;
+                if (W->right->color == BLACK) {
+                    W->left->color = BLACK;
+                    W->color = RED;
+                    RIGHT_ROTATE(T, &W);
+                    W = (*X)->parent->right;
                 }
-                w->color = (*x)->parent->color;
-                (*x)->parent->color = BLACK;
-                w->right->color = BLACK;
-                LEFT_ROTATE(T,&((*x)->parent));
-                (*x) = *T;
+                W->color = (*X)->parent->color;
+                (*X)->parent->color = BLACK;
+                W->right->color = BLACK;
+                LEFT_ROTATE(T, &((*X)->parent));
+                (*X) = *T;
             }
         } else {
-            NODE* w = (*x)->parent->left;
-            if (w->color==RED) {
-                w->color = BLACK;
-                (*x)->parent->color = BLACK;
-                RIGHT_ROTATE(T,&((*x)->parent));
-                w = (*x)->parent->left;
+            NODE* W = (*X)->parent->left;
+            if (W->color == RED) {
+                W->color = BLACK;
+                (*X)->parent->color = BLACK;
+                RIGHT_ROTATE(T, &((*X)->parent));
+                W = (*X)->parent->left;
             }
-            if (w->right->color==BLACK && w->left->color == BLACK) {
-                w->color = RED;
-                (*x) = (*x)->parent;
+            if (W->right->color == BLACK && W->left->color == BLACK) {
+                W->color = RED;
+                (*X) = (*X)->parent;
             } else {
-                if(w->left->color == BLACK) {
-                    w->right->color = BLACK;
-                    w->color = RED;
-                    LEFT_ROTATE(T,&w);
-                    w = (*x)->parent->left;
+                if(W->left->color == BLACK) {
+                    W->right->color = BLACK;
+                    W->color = RED;
+                    LEFT_ROTATE(T, &W);
+                    W = (*X)->parent->left;
                 }
-                w->color = (*x)->parent->color;
-                (*x)->parent->color = BLACK;
-                w->left->color = BLACK;
-                RIGHT_ROTATE(T,&((*x)->parent));
-                (*x) = *T;
+                W->color = (*X)->parent->color;
+                (*X)->parent->color = BLACK;
+                W->left->color = BLACK;
+                RIGHT_ROTATE(T,&((*X)->parent));
+                (*X) = *T;
             }
         }
     }
-    (*x)->color = BLACK;
+    (*X)->color = BLACK;
 }
-NODE* RB_DELETE(NODE* T, NODE* z) {
-    NODE* y = z;
-    enum type y_original_color = z->color;
-    NODE* x;
+NODE* RB_DELETE(NODE* T, NODE* Z) {
+    NODE* Y = Z;
+    enum type y_original_color = Z->color;
+    NODE* X;
 
-    if (z->left==NULL ) {
-        x = z->right;
-        RB_TRANSPLANT(&T,&z,&(z->right));
-    } else if (z->right==NULL ) {
-        x = z->left;
-        RB_TRANSPLANT(&T,&z,&(z->left));
+    if (Z->left==NULL ) {
+        X = Z->right;
+        RB_TRANSPLANT(&T, &Z, &(Z->right));
+    } else if (Z->right==NULL ) {
+        X = Z->left;
+        RB_TRANSPLANT(&T, &Z, &(Z->left));
     } else {
-        y = TREE_MINIMUM(z->right);
-        y_original_color = y->color;
-        x = y->right;
-        if (y->parent==z)
-            x->parent = y;
+        Y = TREE_MINIMUM(Z->right);
+        y_original_color = Y->color;
+        X = Y->right;
+        if (Y->parent == Z)
+            X->parent = Y;
         else {
-            RB_TRANSPLANT(&T,&y,&(y->right));
-            y->right = z->right;
-            y->right->parent = y;
+            RB_TRANSPLANT(&T, &Y, &(Y->right));
+            Y->right = Z->right;
+            Y->right->parent = Y;
         }
-        RB_TRANSPLANT(&T,&z,&y);
-        y->left = z->left;
-        y->left->parent = y;
-        y->color = z->color;
+        RB_TRANSPLANT(&T, &Z, &Y);
+        Y->left = Z->left;
+        Y->left->parent = Y;
+        Y->color = Z->color;
     }
-    if (y_original_color==BLACK)
-        RB_DELETE_FIXUP(&T,&x);
+    if (y_original_color == BLACK)
+        RB_DELETE_FIXUP(&T,&X);
     return T;
 }
 
@@ -339,14 +361,14 @@ void INORDER_TREE_WALK(NODE* root) {
     if (root!=NULL) {
         INORDER_TREE_WALK(root->left);
         if (root->enable == 1)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK(root->right);
     }
 }
 void OUTORDER_TREE_WALK(NODE* root) {
     if (root!=NULL) {
         OUTORDER_TREE_WALK(root->right);
-        printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+        printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         OUTORDER_TREE_WALK(root->left);
     }
 }
@@ -354,7 +376,7 @@ void INORDER_TREE_WALK_DELETED(NODE* root) {
     if (root!=NULL) {
         INORDER_TREE_WALK_DELETED(root->left);
         if (root->enable == 0)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_DELETED(root->right);
     }
 }
@@ -362,7 +384,7 @@ void INORDER_TREE_WALK_YEAR_BIGGER(NODE* root, int year) {
     if (root!=NULL) {
         INORDER_TREE_WALK_YEAR_BIGGER(root->left, year);
         if (root->year > year)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_YEAR_BIGGER(root->right, year);
     }
 }
@@ -370,7 +392,7 @@ void INORDER_TREE_WALK_YEAR_SMALLER(NODE* root, int year) {
     if (root!=NULL) {
         INORDER_TREE_WALK_YEAR_SMALLER(root->left, year);
         if (root->year < year)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_YEAR_SMALLER(root->right, year);
     }
 }
@@ -378,7 +400,7 @@ void INORDER_TREE_WALK_RUNTIME_BIGGER(NODE* root, int runtime) {
     if (root!=NULL) {
         INORDER_TREE_WALK_RUNTIME_BIGGER(root->left, runtime);
         if (root->runtime > runtime)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_RUNTIME_BIGGER(root->right, runtime);
     }
 }
@@ -386,7 +408,7 @@ void INORDER_TREE_WALK_RUNTIME_SMALLER(NODE* root, int runtime) {
     if (root!=NULL) {
         INORDER_TREE_WALK_RUNTIME_SMALLER(root->left, runtime);
         if (root->runtime < runtime)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_RUNTIME_SMALLER(root->right, runtime);
     }
 }
@@ -394,21 +416,21 @@ void INORDER_TREE_WALK_GENRES(NODE* root, char* genres) {
      if (root!=NULL) {
         INORDER_TREE_WALK_GENRES(root->left, genres);
         if (strstr(root->genres,genres) != NULL)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_GENRES(root->right, genres);
      }
 }
 
 // SEARCH
-NODE* TREE_SEARCH_INDEX(NODE* root, int x) {
-    if (root==NULL || root->index == x)
+NODE* TREE_SEARCH_INDEX(NODE* root, int X) {
+    if (root == NULL || root->index == X)
         return root;
-    else if (x < root->index)
-       return  TREE_SEARCH_INDEX(root->left,x);
-    else return TREE_SEARCH_INDEX(root->right,x);
+    else if (X < root->index)
+       return  TREE_SEARCH_INDEX(root->left, X);
+    else return TREE_SEARCH_INDEX(root->right, X);
 }
 NODE* TREE_SEARCH_TITLE(NODE* root, char* str) {
-    if (root==NULL || strcmp(root->title,str)==0)
+    if (root==NULL || strcmp(root->title,str) == 0)
         return root;
     else if (strcmp(root->title, str) > 0)
         return  TREE_SEARCH_TITLE(root->left,str);
@@ -416,18 +438,26 @@ NODE* TREE_SEARCH_TITLE(NODE* root, char* str) {
 }
 
 // MODIFY
-void RBT_MODIFY(NODE* root, bool enable, char* index, char* title, char* year, char* runtime, char* genres) {
+void RBT_MODIFY(NODE* root, bool enable, char* index, char* title, char* year, char* runtime, char* genres, char* media, int m, int d, int y) {
     root->enable = enable;
-    if (strcmp(index, "")!=0)
+    if (strcmp(index, "") != 0)
         root->index = atoi(index);
-    if (strcmp(title, "")!=0)
+    if (strcmp(title, "") != 0)
         root->title = title;
-    if (strcmp(year, "")!=0)
+    if (strcmp(year, "") != 0)
         root->year = atoi(year);
-    if (strcmp(runtime, "")!=0)
+    if (strcmp(runtime, "") != 0)
         root->runtime = atoi(runtime);
-    if (strcmp(genres, "")!=0)
+    if (strcmp(genres, "") != 0)
         root->genres = genres;
+    if (strcmp(media, "") != 0)
+        root->media = media;
+    if (m != 0)
+        root->m = m;
+    if (d != 0) 
+        root->d = d;
+    if (y != 0)
+        root->y = y;
 }
 
 // RBT to RBT
@@ -435,26 +465,26 @@ void RBT_EXPORT_TITLE(NODE* root, NODE** RBT_title)  {
     if (root==NULL)
         return;
     RBT_EXPORT_TITLE(root->left, RBT_title);
-    *RBT_title = RB_INSERT_TITLE(*RBT_title, root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+    *RBT_title = RB_INSERT_TITLE(*RBT_title, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
 	RBT_EXPORT_TITLE(root->right, RBT_title);
 }
 void RBT_EXPORT_YEAR(NODE* root, NODE** RBT_year)  {
     if (root==NULL)
         return;
     RBT_EXPORT_YEAR(root->left, RBT_year);
-    *RBT_year = RB_INSERT_YEAR(*RBT_year, root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+    *RBT_year = RB_INSERT_YEAR(*RBT_year, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
 	RBT_EXPORT_YEAR(root->right, RBT_year);
 }
 void RBT_EXPORT_RUNTIME(NODE* root, NODE** RBT_runtime)  {
     if (root==NULL)
         return;
     RBT_EXPORT_RUNTIME(root->left, RBT_runtime);
-    *RBT_runtime = RB_INSERT_RUNTIME(*RBT_runtime, root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+    *RBT_runtime = RB_INSERT_RUNTIME(*RBT_runtime, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
 	RBT_EXPORT_RUNTIME(root->right, RBT_runtime);
 }
 
 // TEMP
 void RBT_PRINT_NODE(NODE* root) {
     if (root != NULL)
-	    printf("%d\t%d\t%s\t%d\t%d\t%s\n\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres);
+	    printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
 }

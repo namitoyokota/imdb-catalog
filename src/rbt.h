@@ -16,10 +16,10 @@ NODE* TREE_MINIMUM(NODE*);                          // PAGE 291
 
 // INSERET
 void RB_INSERT_FIXUP(NODE**, NODE**);               // PAGE 316
-    NODE* RB_INSERT_INDEX(NODE*, bool, int, char*, int, int, char*);
-    NODE* RB_INSERT_TITLE(NODE*, bool, int, char*, int, int, char*);
-    NODE* RB_INSERT_YEAR(NODE*, bool, int, char*, int, int, char*);
-    NODE* RB_INSERT_RUNTIME(NODE*, bool, int, char*, int, int, char*);
+    NODE* RB_INSERT_INDEX(NODE*, bool, int, char*, int, int, char*, char*, int, int, int);
+    NODE* RB_INSERT_TITLE(NODE*, bool, int, char*, int, int, char*, char*, int, int, int);
+    NODE* RB_INSERT_YEAR(NODE*, bool, int, char*, int, int, char*, char*, int, int, int);
+    NODE* RB_INSERT_RUNTIME(NODE*, bool, int, char*, int, int, char*, char*, int, int, int);
 
 // DELETE
 void RB_TRANSPLANT(NODE**, NODE**, NODE**);         // PAGE 323
@@ -43,7 +43,7 @@ void OUTORDER_TREE_WALK(NODE*);
     NODE* TREE_SEARCH_TITLE(NODE*, char*);
 
 // UPDATE
-void RBT_MODIFY(NODE*, bool, char*, char*, char*, char*, char*);
+void RBT_MODIFY(NODE*, bool, char*, char*, char*, char*, char*, char*, int, int, int);
 
 // RBT to RBT
     void RBT_EXPORT_TITLE(NODE*, NODE**);
