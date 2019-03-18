@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-#include "rbt.h"
+#include "../lib/rbt.h"
 
 enum type {RED,BLACK};
 

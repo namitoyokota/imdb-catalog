@@ -3,9 +3,9 @@
 #include <curses.h>
 #include <string.h>
 #include <time.h>
-#include "rbt.h"
-#include "crud.h"
-#include "logger.h"
+#include "../lib/rbt.h"
+#include "../lib/crud.h"
+#include "../lib/logger.h"
 
 // MENU
 int mainMenu(int, int);
@@ -34,17 +34,17 @@ void parseFILE(char*, NODE**);
 int main(void) {
 
     // 0 = read, 1 = write
-    int enable = 0;
+    int enable = 1;
     int opt = 0;
 
     // console ui
     if (opt == 0) {
 
         char* username = "namito";
-        char filename[30] = "./src/logs/"; strcat(filename, username); strcat(filename, ".log");
+        char filename[30] = "./logs/"; strcat(filename, username); strcat(filename, ".log");
 
         NODE* RBT = NULL;
-        parseFILE("./src/data/movie_records.tsv", &RBT);
+        parseFILE("./data/movie_records.tsv", &RBT);
 
         if (enable == 0) {
             readLog(filename, &RBT);

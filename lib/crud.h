@@ -2,7 +2,7 @@
 #define crud_h
 
 #include <stdio.h>
-#include "rbt.h"
+#include "../lib/rbt.h"
 
 extern void CREATE_MOVIE(char*, NODE**, char*, char*, char*, char*, char*, char*, char*, char*, char*);
 extern void RETRIEVE_MOVIE(char*, NODE**, char*);

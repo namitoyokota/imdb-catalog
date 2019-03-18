@@ -1,7 +1,7 @@
-#include "logger.h"
+#include "../lib/logger.h"
 #include <stdio.h>
-#include "rbt.h"
-#include "crud.h"
+#include "../lib/rbt.h"
+#include "../lib/crud.h"
 
 void printLog(char* filename, char* message) {
     printf("printLog\n");

@@ -8,7 +8,8 @@
         "bst.h": "c",
         "stdlib.h": "c",
         "rbt.h": "c",
-        "ios": "c"
+        "ios": "c",
+        "crud.h": "c"
     },
     "editor.minimap.enabled": false
 }

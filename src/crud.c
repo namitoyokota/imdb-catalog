@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "rbt.h"
-#include "logger.h"
+#include "../lib/rbt.h"
+#include "../lib/logger.h"
 
 void CREATE_MOVIE(char* filename, NODE** root, char* index, char* title, char* year, char* runtime, char* genres, char* media, char* m, char* d, char* y) {
     *root = RB_INSERT_INDEX(*root, 1, atoi(index), title, atoi(year), atoi(runtime), genres, media, atoi(m), atoi(d), atoi(y));

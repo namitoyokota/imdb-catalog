@@ -1,7 +1,5 @@
-*.pdf
-*.tsv
 *.o
-*.tsv
-*.log
-main
 vscode/
+bin/
+log/
+data/
