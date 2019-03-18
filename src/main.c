@@ -5,6 +5,7 @@
 #include <time.h>
 #include "rbt.h"
 #include "crud.h"
+#include "logger.h"
 
 // MENU
 int mainMenu(int, int);
@@ -32,22 +33,33 @@ void parseFILE(char*, NODE**);
 
 int main(void) {
 
+    // 0 = read, 1 = write
+    int enable = 1;
     int opt = 0;
 
     // console ui
     if (opt == 0) {
+
+        char* username = "namito";
+        char filename[30] = "./src/logs/"; strcat(filename, username); strcat(filename, ".log");
+
         NODE* RBT = NULL;
-        parseFILE("./data/movie_records", &RBT);
+        parseFILE("./src/data/movie_records", &RBT);
 
-        printf("\nadded 1000\n");
-        CREATE_MOVIE(&RBT, "1000", "Title of the New Movie", "2019", "90", "Comedy", "DVD", 10, 30, 2018);
-        INORDER_TREE_WALK(RBT);
+        if (enable == 0) {
+            readLog(filename, &RBT);
+            INORDER_TREE_WALK(RBT);
+        } else {    
+            printf("\nadded 1000\n");
+            CREATE_MOVIE(filename, &RBT, "1000", "Title of the New Movie", "2019", "90", "Comedy", "DVD", "10", "30", "2018");
+            INORDER_TREE_WALK(RBT);
 
-        printf("\ndeleting 335\n");
-        DELETE_MOVIE(&RBT, "335");
-        printf("\nupdating 502\n");
-        UPDATE_MOVIE(&RBT, "502", "Namito", "1999", "90", "Comedy,Fantasy", "BluRay", 8, 13, 1999);
-        INORDER_TREE_WALK(RBT);
+            printf("\ndeleting 335\n");
+            DELETE_MOVIE(filename, &RBT, "335");
+            printf("\nupdating 502\n");
+            UPDATE_MOVIE(filename, &RBT, "502", "Namito", "1999", "90", "Comedy,Fantasy", "BluRay", "8", "13", "1999");
+            INORDER_TREE_WALK(RBT);
+        }
 
         /*
         printf("\n\ndeleted list\n");
