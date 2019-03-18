@@ -9,5 +9,6 @@
         "stdlib.h": "c",
         "rbt.h": "c",
         "ios": "c"
-    }
+    },
+    "editor.minimap.enabled": false
 }
