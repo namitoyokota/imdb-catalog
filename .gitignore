@@ -2,7 +2,6 @@
 *.tsv
 *.o
 *.tsv
-*.doc
-*.docx
 *.log
 main
+vscode/
