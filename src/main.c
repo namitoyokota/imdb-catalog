@@ -44,7 +44,7 @@ int main(void) {
         char filename[30] = "./src/logs/"; strcat(filename, username); strcat(filename, ".log");
 
         NODE* RBT = NULL;
-        parseFILE("./src/data/movie_records", &RBT);
+        parseFILE("./src/data/movie_records.tsv", &RBT);
 
         if (enable == 0) {
             readLog(filename, &RBT);
