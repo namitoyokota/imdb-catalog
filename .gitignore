@@ -1,8 +1,8 @@
 *.pdf
 *.tsv
 *.o
+*.tsv
+*.doc
+*.docx
+*.log
 main
-/test/*
-/ncurses-6.1/*
-/src/data/*
-*
