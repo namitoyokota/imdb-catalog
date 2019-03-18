@@ -40,3 +40,4 @@ clean :
 		# clean outputted files
 		rm -f $(OBJS) ./src/main
 		rm -f ./src/logs/*.log
+		rm -f ./src/.log
