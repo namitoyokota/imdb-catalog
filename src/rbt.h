@@ -41,6 +41,8 @@ void OUTORDER_TREE_WALK(NODE*);
 // SEARCH
     NODE* TREE_SEARCH_INDEX(NODE*, int);            // PAGE 290
     NODE* TREE_SEARCH_TITLE(NODE*, char*);
+    void TREE_SEARCH_LIST_INDEX(NODE*, NODE**, int);
+    void TREE_SEARCH_LIST_TITLE(NODE*, NODE**, char*);
 
 // UPDATE
 void RBT_MODIFY(NODE*, bool, char*, char*, char*, char*, char*, char*, int, int, int);

@@ -34,7 +34,7 @@ void parseFILE(char*, NODE**);
 int main(void) {
 
     // 0 = read, 1 = write
-    int enable = 1;
+    int enable = 0;
     int opt = 0;
 
     // console ui
@@ -49,6 +49,15 @@ int main(void) {
         if (enable == 0) {
             readLog(filename, &RBT);
             INORDER_TREE_WALK(RBT);
+
+            printf("\n\n");
+
+            NODE* search = NULL;
+            TREE_SEARCH_LIST_TITLE(RBT, &search, "hAMLET");
+            //INORDER_TREE_WALK(search);
+
+            //TREE_SEARCH_LIST_INDEX(RBT, &search, 1000);
+            //INORDER_TREE_WALK(search);
         } else {    
             printf("\nadded 1000\n");
             CREATE_MOVIE(filename, &RBT, "1000", "Title of the New Movie", "2019", "90", "Comedy", "DVD", "10", "30", "2018");

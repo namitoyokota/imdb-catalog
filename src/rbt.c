@@ -430,11 +430,31 @@ NODE* TREE_SEARCH_INDEX(NODE* root, int X) {
     else return TREE_SEARCH_INDEX(root->right, X);
 }
 NODE* TREE_SEARCH_TITLE(NODE* root, char* str) {
-    if (root==NULL || strcmp(root->title,str) == 0)
+    if (root == NULL || strcasecmp(root->title,str) == 0)
         return root;
-    else if (strcmp(root->title, str) > 0)
+    else if (strcasecmp(root->title, str) > 0)
         return  TREE_SEARCH_TITLE(root->left,str);
     else return TREE_SEARCH_TITLE(root->right,str);
+}
+void TREE_SEARCH_LIST_INDEX(NODE* root, NODE** search, int X) {
+    if (root->index == X) {
+        printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+        *search = RB_INSERT_INDEX(*search, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+    }
+    if (root->left != NULL) 
+        TREE_SEARCH_LIST_INDEX(root->left, search, X);
+    if (root->right != NULL)
+        TREE_SEARCH_LIST_INDEX(root->right, search, X);
+}
+void TREE_SEARCH_LIST_TITLE(NODE* root, NODE** search, char* str) {
+    if (strcasecmp(root->title, str) == 0) {
+        printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+        *search = RB_INSERT_TITLE(*search, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+    }
+    if (root->left != NULL) 
+        TREE_SEARCH_LIST_TITLE(root->left, search, str);
+    if (root->right != NULL)
+        TREE_SEARCH_LIST_TITLE(root->right, search, str);
 }
 
 // MODIFY
