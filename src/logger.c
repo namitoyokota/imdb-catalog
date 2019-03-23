@@ -1,10 +1,9 @@
-#include "../lib/logger.h"
 #include <stdio.h>
+#include "../lib/logger.h"
 #include "../lib/rbt.h"
 #include "../lib/crud.h"
 
 void printLog(char* filename, char* message) {
-    printf("printLog\n");
     FILE* fp = fopen(filename, "ab+");
     if (fp != 0) {
         fprintf(fp, "%s\n", message);

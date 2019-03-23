@@ -375,49 +375,41 @@ void INORDER_TREE_WALK_DELETED(RBT* root) {
     if (root!=NULL) {
         INORDER_TREE_WALK_DELETED(root->left);
         if (root->enable == 0)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+            push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_DELETED(root->right);
     }
 }
 void INORDER_TREE_WALK_YEAR_BIGGER(RBT* root, int year) {
     if (root!=NULL) {
         INORDER_TREE_WALK_YEAR_BIGGER(root->left, year);
-        if (root->year > year)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+        if (root->year > year && root->enable == 1)
+            push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_YEAR_BIGGER(root->right, year);
     }
 }
 void INORDER_TREE_WALK_YEAR_SMALLER(RBT* root, int year) {
     if (root!=NULL) {
         INORDER_TREE_WALK_YEAR_SMALLER(root->left, year);
-        if (root->year < year)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+        if (root->year < year && root->enable == 1)
+            push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_YEAR_SMALLER(root->right, year);
     }
 }
 void INORDER_TREE_WALK_RUNTIME_BIGGER(RBT* root, int runtime) {
     if (root!=NULL) {
         INORDER_TREE_WALK_RUNTIME_BIGGER(root->left, runtime);
-        if (root->runtime > runtime)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+        if (root->runtime > runtime && root->enable == 1)
+            push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_RUNTIME_BIGGER(root->right, runtime);
     }
 }
 void INORDER_TREE_WALK_RUNTIME_SMALLER(RBT* root, int runtime) {
     if (root!=NULL) {
         INORDER_TREE_WALK_RUNTIME_SMALLER(root->left, runtime);
-        if (root->runtime < runtime)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+        if (root->runtime < runtime && root->enable == 1)
+            push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         INORDER_TREE_WALK_RUNTIME_SMALLER(root->right, runtime);
     }
-}
-void INORDER_TREE_WALK_GENRES(RBT* root, char* genres) {
-     if (root!=NULL) {
-        INORDER_TREE_WALK_GENRES(root->left, genres);
-        if (strstr(root->genres,genres) != NULL)
-            printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
-        INORDER_TREE_WALK_GENRES(root->right, genres);
-     }
 }
 
 // SEARCH
@@ -435,25 +427,32 @@ RBT* TREE_SEARCH_TITLE(RBT* root, char* str) {
         return  TREE_SEARCH_TITLE(root->left,str);
     else return TREE_SEARCH_TITLE(root->right,str);
 }
-void TREE_SEARCH_LIST_INDEX(RBT* root, RBT** search, int X) {
-    if (root->index == X) {
-        printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
-        *search = RB_INSERT_INDEX(*search, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+void TREE_SEARCH_LIST_INDEX(RBT* root, int X) {
+    if (root->index == X && root->enable == 1) {
+        push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
     }
     if (root->left != NULL) 
-        TREE_SEARCH_LIST_INDEX(root->left, search, X);
+        TREE_SEARCH_LIST_INDEX(root->left, X);
     if (root->right != NULL)
-        TREE_SEARCH_LIST_INDEX(root->right, search, X);
+        TREE_SEARCH_LIST_INDEX(root->right, X);
 }
-void TREE_SEARCH_LIST_TITLE(RBT* root, RBT** search, char* str) {
-    if (strcasestr(root->title, str) != 0) {
-        printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
-        *search = RB_INSERT_TITLE(*search, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+void TREE_SEARCH_LIST_TITLE(RBT* root, char* str) {
+    if (strcasestr(root->title, str) != 0 && root->enable == 1) {
+        push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
     }
     if (root->left != NULL) 
-        TREE_SEARCH_LIST_TITLE(root->left, search, str);
+        TREE_SEARCH_LIST_TITLE(root->left, str);
     if (root->right != NULL)
-        TREE_SEARCH_LIST_TITLE(root->right, search, str);
+        TREE_SEARCH_LIST_TITLE(root->right, str);
+}
+void TREE_SEARCH_LIST_GENRE(RBT* root, char* str) {
+    if (strcasestr(root->genres, str) != 0 && root->enable == 1) {
+        push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+    }
+    if (root->left != NULL) 
+        TREE_SEARCH_LIST_GENRE(root->left, str);
+    if (root->right != NULL)
+        TREE_SEARCH_LIST_GENRE(root->right, str);
 }
 
 // MODIFY
@@ -502,10 +501,13 @@ void RBT_EXPORT_RUNTIME(RBT* root, RBT** RBT_runtime)  {
 	RBT_EXPORT_RUNTIME(root->right, RBT_runtime);
 }
 
-// TEMP
-void RBT_PRINT_RBT(RBT* root) {
-    if (root != NULL)
-	    printf("%d\t%d\t%s\t%d\t%d\t%s\t%s\t%d\t%d\t%d\n\n", root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+void INORDER_STACK(RBT* root, STACK* s) {
+    if (root!=NULL) {
+        INORDER_STACK(root->right, s);
+        if (root->enable == 1)
+            push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+        INORDER_STACK(root->left, s);
+    }
 }
 
 void OUTORDER_STACK(RBT* root, STACK* s) {
@@ -514,14 +516,5 @@ void OUTORDER_STACK(RBT* root, STACK* s) {
         if (root->enable != 0)
             push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
         OUTORDER_STACK(root->right, s);
-    }
-}
-
-void INORDER_STACK(RBT* root, STACK* s) {
-    if (root!=NULL) {
-        INORDER_STACK(root->right, s);
-        if (root->enable != 0)
-            push(root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
-        INORDER_STACK(root->left, s);
     }
 }

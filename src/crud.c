@@ -27,7 +27,8 @@ void RETRIEVE_MOVIE(char* filename, RBT** root, char* index) {
 void UPDATE_MOVIE(char* filename, RBT** root, char* index, char* title, char* year, char* runtime, char* genres, char* media, char* m, char* d, char* y) {
     RBT* search = TREE_SEARCH_INDEX(*root, atoi(index));
     if (search == NULL)  {
-        printf("Error. A movie with the inputted index does not exist\n\n");
+        return;
+        //printf("Error. A movie with the inputted index does not exist\n\n");
     } else {
         RBT_MODIFY(search, 1, index, title, year, runtime, genres, media, atoi(m), atoi(d), atoi(y));
         // if index is ever changed, the node should be deleted then inserted again to sort in the right location
@@ -46,9 +47,9 @@ void UPDATE_MOVIE(char* filename, RBT** root, char* index, char* title, char* ye
 void DELETE_MOVIE(char* filename, RBT** root, char* index) {
     RBT* search = NULL;
     search = TREE_SEARCH_INDEX(*root, atoi(index));
-    if (search == NULL) printf("Error. A movie with the inputted index does not exist\n\n");
+    if (search == NULL) return; // printf("Error. A movie with the inputted index does not exist\n\n");
     else RBT_MODIFY(search, 0, "", "", "", "", "", "", 0,0,0);
-    if (strcmp(filename, "./logs/") != 0) {
+    if (strcmp(filename, "../log/") != 0) {
         char message[100] = "Delete,"; strcat(message, index);
         printLog(filename, message);
     }

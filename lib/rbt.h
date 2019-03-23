@@ -38,13 +38,13 @@ void OUTORDER_TREE_WALK(RBT*);
     void INORDER_TREE_WALK_YEAR_SMALLER(RBT*, int);
     void INORDER_TREE_WALK_RUNTIME_BIGGER(RBT*, int);
     void INORDER_TREE_WALK_RUNTIME_RUNTIME(RBT*, int);
-    void INORDER_TREE_WALK_GENRES(RBT*, char*);
 
 // SEARCH
     RBT* TREE_SEARCH_INDEX(RBT*, int);            // PAGE 290
     RBT* TREE_SEARCH_TITLE(RBT*, char*);
-    void TREE_SEARCH_LIST_INDEX(RBT*, RBT**, int);
-    void TREE_SEARCH_LIST_TITLE(RBT*, RBT**, char*);
+    void TREE_SEARCH_LIST_INDEX(RBT*, int);
+    void TREE_SEARCH_LIST_TITLE(RBT*, char*);
+    void TREE_SEARCH_LIST_GENRE(RBT*, char*);
 
 // UPDATE
 void RBT_MODIFY(RBT*, bool, char*, char*, char*, char*, char*, char*, int, int, int);
@@ -54,8 +54,6 @@ void RBT_MODIFY(RBT*, bool, char*, char*, char*, char*, char*, char*, int, int, 
     void RBT_EXPORT_YEAR(RBT*, RBT**);
     void RBT_EXPORT_RUNTIME(RBT*, RBT**);
 
-// TEMP
-void RBT_PRINT_RBT(RBT*);
 void OUTORDER_STACK(RBT*, STACK*);
 void INORDER_STACK(RBT*, STACK*);
 

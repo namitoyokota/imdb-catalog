@@ -16,117 +16,79 @@ RBT* loadMenu(int, int);
     int filterMenu(int, int);
     int searchMenu(int, int);
     // CRUD
+    int editMenu(int, int, char*);
     int createMenu(int, int);
-    int retrieveMenu(int, int);
-    int updateMenu(int, int);
-    int deleteMenu(int, int);
+    int retrieveMenu(int, int, char*);
+    int updateMenu(int, int, char*);
+    int deleteMenu(int, int, char*);
     // other
     int helpMenu(int, int);
     void clearBox(WINDOW*, int, int);
 // FILE IO
 void parseFILE(char*, RBT**);
+void updateRBT();
+void checkLog(char*);
 
+STACK* LIST;
 RBT* RBT_INDEX;
 RBT* RBT_TITLE;
 RBT* RBT_YEAR;
 RBT* RBT_RUNTIME;
 
-
-
-
-
-
-
+char str[30];
+char filename[30];
 
 int main(void) {
 
-    // 0 = read, 1 = write
-    int enable = 0;
-    int opt = 1;
+    initscr();
+    noecho();
+    cbreak();
+    int yMax, xMax;
+    getmaxyx(stdscr, yMax, xMax);
+    RBT_INDEX = loadMenu(yMax, xMax);
+    RBT_EXPORT_RUNTIME(RBT_INDEX, &RBT_RUNTIME);
+    RBT_EXPORT_YEAR(RBT_INDEX, &RBT_YEAR);
+    RBT_EXPORT_TITLE(RBT_INDEX, &RBT_TITLE);
 
-    // console ui
-    if (opt == 0) {
+    WINDOW* initial  = newwin(yMax, xMax, 0, 0);
+    box(initial, 0,0);
+    wrefresh(initial);
+    keypad(initial, true);
 
-        char* username = "namito";
-        char filename[30] = "./logs/"; strcat(filename, username); strcat(filename, ".log");
+    mvwprintw(initial, 0, 0, "Getting Started");
 
-        parseFILE("./data/movie_records.tsv", &RBT_INDEX);
+    echo();
+    mvwprintw(initial, 2, 1, "Enter username (this will determine your .log filename)");
+    mvwprintw(initial, 3, 2, ">> ");
+    wgetstr(initial, str);
 
-        if (enable == 0) {
-            readLog(filename, &RBT_INDEX);
-            //INORDER_TREE_WALK(RBT);
+    checkLog(str);
+    clearBox(initial, yMax, xMax);
 
-            printf("\n\nsearch don\n");
+    endwin();
 
-            //RBT* search = NULL;
-            //TREE_SEARCH_LIST_TITLE(RBT, &search, "don");
-            //INORDER_TREE_WALK(search);
-
-            //TREE_SEARCH_LIST_INDEX(RBT, &search, 1000);
-            //INORDER_TREE_WALK(search);
-        } else {    
-            printf("\nadded 1000\n");
-            CREATE_MOVIE(filename, &RBT_INDEX, "1000", "Title of the New Movie", "2019", "90", "Comedy", "DVD", "10", "30", "2018");
-            //INORDER_TREE_WALK(RBT);
-
-            printf("\ndeleting 335\n");
-            DELETE_MOVIE(filename, &RBT_INDEX, "335");
-            printf("\nupdating 502\n");
-            UPDATE_MOVIE(filename, &RBT_INDEX, "502", "Namito", "1999", "90", "Comedy,Fantasy", "BluRay", "8", "13", "1999");
-            //INORDER_TREE_WALK(RBT);
-        }
-
-        /*
-        printf("\n\ndeleted list\n");
-        INORDER_TREE_WALK_DELETED(RBT);
-
-        printf("\n\nyear greater than 1900\n");  
-        INORDER_TREE_WALK_YEAR_BIGGER(RBT, 1900);
-
-        printf("\n\nruntime greater than 0\n");  
-        INORDER_TREE_WALK_YEAR_BIGGER(RBT, 0);
-
-        printf("\n\nyear smaller than 1900\n");  
-        INORDER_TREE_WALK_YEAR_SMALLER(RBT, 1900);
-
-        printf("\n\ndrama genre\n");  
-        INORDER_TREE_WALK_GENRES(RBT, "Drama");
-        */
-    }
-
-    // curses ui
-    else {
-        initscr();
-        noecho();
-        cbreak();
-
-        int yMax, xMax;
-        getmaxyx(stdscr, yMax, xMax);
-        RBT_INDEX = loadMenu(yMax, xMax);
-        RBT_EXPORT_RUNTIME(RBT_INDEX, &RBT_RUNTIME);
-        RBT_EXPORT_YEAR(RBT_INDEX, &RBT_YEAR);
-        RBT_EXPORT_TITLE(RBT_INDEX, &RBT_TITLE);
-
-        while(1) {
-            int choice = mainMenu(yMax, xMax);
-            switch(choice) {
-                case 0:
-                    sortMenu(yMax, xMax);
-                    break;
-                case 1:
-                    filterMenu(yMax, xMax);
-                    break;
-                case 2:
-                    searchMenu(yMax, xMax);
-                    break;
-                case 3:
-                    helpMenu(yMax, xMax);
-                    break;
-                case 4:
-                    return 0;
-                default:
-                    break;
-            }
+    while(1) {
+        int choice = mainMenu(yMax, xMax);
+        switch(choice) {
+            case 0:
+                sortMenu(yMax, xMax);
+                break;
+            case 1:
+                filterMenu(yMax, xMax);
+                break;
+            case 2:
+                searchMenu(yMax, xMax);
+                break;
+            case 3:
+                editMenu(yMax, xMax, "");
+                break;
+            case 4:
+                helpMenu(yMax, xMax);
+                break;
+            case 5:
+                return 0;
+            default:
+                break;
         }
     }
     return 0;
@@ -134,7 +96,7 @@ int main(void) {
 
 int mainMenu(int yMax, int xMax) {
 
-    char* choices[5] = {"Sort", "Filter", "Search", "Help", "Quit"};
+    char* choices[6] = {"Sort", "Filter", "Search", "CRUD", "Help", "Quit"};
     int choice;
     int highlight = 1;
 
@@ -142,14 +104,15 @@ int mainMenu(int yMax, int xMax) {
     box(main, 0,0);
     wrefresh(main);
     keypad(main, true);
-    
+
+    noecho();
     mvwprintw(main, 0, 0, "IMDb Catalog");
     mvwprintw(main, 2, 3, "Use 'up arrow' and 'down arrow' and 'enter' to navigate through the menu");
 
     // main menu
     while(1) {
         // print highlight
-        for (int i=1; i<=5; i++) {
+        for (int i=1; i<=6; i++) {
             if (i == highlight)
                 wattron(main, A_REVERSE);
             mvwprintw(main, i+3, 2, choices[i-1]);
@@ -162,12 +125,12 @@ int mainMenu(int yMax, int xMax) {
             case KEY_UP:
                 highlight--;
                 if (highlight == 0)
-                    highlight = 1;
+                    highlight = 6;
                 break;
             case KEY_DOWN:
                 highlight++;
-                if (highlight == 6)
-                    highlight = 5;
+                if (highlight == 7)
+                    highlight = 1;
                 break;
             default:
                 break;
@@ -212,12 +175,12 @@ int sortMenu(int yMax, int xMax) {
             case KEY_UP:
                 highlight--;
                 if (highlight == 0)
-                    highlight = 1;
+                    highlight = 8;
                 break;
             case KEY_DOWN:
                 highlight++;
                 if (highlight == 9)
-                    highlight = 8;
+                    highlight = 1;
                 break;
             default:
                 break;
@@ -229,35 +192,32 @@ int sortMenu(int yMax, int xMax) {
     }
 
     clearBox(sort, yMax, xMax);
-
-    STACK* s;
     setMax(yMax-5);
 
     switch(highlight-1) {
         case 0:
-            INORDER_STACK(RBT_INDEX, s);
+            INORDER_STACK(RBT_INDEX, LIST);
             break;
         case 1:
-            OUTORDER_STACK(RBT_INDEX, s);
+            OUTORDER_STACK(RBT_INDEX, LIST);
             break;
         case 2:
-            INORDER_STACK(RBT_TITLE, s);
+            INORDER_STACK(RBT_TITLE, LIST);
             break;
         case 3:
-            INORDER_STACK(RBT_YEAR, s);
+            INORDER_STACK(RBT_YEAR, LIST);
             break;
         case 4:
-            OUTORDER_STACK(RBT_YEAR, s);
+            OUTORDER_STACK(RBT_YEAR, LIST);
             break;
         case 5:
-            INORDER_STACK(RBT_RUNTIME, s);
+            INORDER_STACK(RBT_RUNTIME, LIST);
             break;
         case 6:
-            OUTORDER_STACK(RBT_RUNTIME, s);
+            OUTORDER_STACK(RBT_RUNTIME, LIST);
             break;
         case 7:
             return 0;
-            break;
         default:
             break;
     }
@@ -267,20 +227,126 @@ int sortMenu(int yMax, int xMax) {
         if (empty()) break;
         pop(sort, i);
     }
-    wgetch(sort);
+    freeStack();
+
+    echo();
+    mvwprintw(sort, yMax-3, 2, "Enter index to edit or 'q' to quit");
+    mvwprintw(sort, yMax-2, 3, ">> ");
+    wgetstr(sort, str);
+
+    if (strcmp(str, "q") != 0 && strcmp(str, "") !=0) editMenu(yMax, xMax, str);
 
     return 0;
 }
 
 int filterMenu(int yMax, int xMax) {
-    int t = yMax + xMax;
+    char* choices[5] = {"Set Minimum Year", "Set Maximum Year", "Set Minimum Runtime", "Set Maximum Runtime", "Back"};
+    int choice;
+    int highlight = 1;
 
-    return t;
+    WINDOW* filter = newwin(yMax, xMax, 0, 0);
+    box(filter, 0,0);
+    wrefresh(filter);
+    keypad(filter, true);
+
+    mvwprintw(filter, 0, 0, "Filter Menu");
+
+    while(1) {
+        // print highlight
+        for (int i=1; i<=5; i++) {
+            if (i == highlight)
+                wattron(filter, A_REVERSE);
+            mvwprintw(filter, i+1, 2, choices[i-1]);
+            wattroff(filter, A_REVERSE);
+        }
+        choice = wgetch(filter);
+
+        // switch up and down
+        switch(choice) {
+            case KEY_UP:
+                highlight--;
+                if (highlight == 0)
+                    highlight = 5;
+                break;
+            case KEY_DOWN:
+                highlight++;
+                if (highlight == 6)
+                    highlight = 1;
+                break;
+            default:
+                break;
+        }
+
+        // on the press of 'enter'
+        if (choice == 10)
+            break;
+    }
+
+    echo();
+    clearBox(filter, yMax, xMax);
+    setMax(yMax-5);
+
+    switch(highlight-1) {
+        case 0:
+            mvwprintw(filter, 2, 1, "Year");   
+            mvwprintw(filter, 3, 2, ">> ");
+            wgetstr(filter, str);
+            INORDER_TREE_WALK_YEAR_BIGGER(RBT_YEAR, atoi(str));
+            break;
+        case 1:
+            mvwprintw(filter, 2, 1, "Year");   
+            mvwprintw(filter, 3, 2, ">> ");
+            wgetstr(filter, str);
+            INORDER_TREE_WALK_YEAR_SMALLER(RBT_YEAR, atoi(str));
+            break;
+        case 2:
+            mvwprintw(filter, 2, 1, "Runtime");   
+            mvwprintw(filter, 3, 2, ">> ");
+            wgetstr(filter, str);
+            INORDER_TREE_WALK_RUNTIME_BIGGER(RBT_RUNTIME, atoi(str));
+            break;
+        case 3:
+            mvwprintw(filter, 2, 1, "Runtime");   
+            mvwprintw(filter, 3, 2, ">> ");
+            wgetstr(filter, str);
+            INORDER_TREE_WALK_RUNTIME_SMALLER(RBT_RUNTIME, atoi(str));
+            break;
+        case 4:
+            OUTORDER_STACK(RBT_YEAR, LIST);
+            break;
+        case 5:
+            INORDER_STACK(RBT_RUNTIME, LIST);
+            break;
+        case 6:
+            OUTORDER_STACK(RBT_RUNTIME, LIST);
+            break;
+        case 7:
+            return 0;
+        default:
+            break;
+    }
+
+    clearBox(filter, yMax, xMax);
+    mvwprintw(filter, 2, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
+    for (int i=4; i<yMax-5; i++) {
+        if (empty()) break;
+        pop(filter, i);
+    }
+    freeStack();
+
+    echo();
+    mvwprintw(filter, yMax-3, 2, "Enter index to edit or 'q' to quit");
+    mvwprintw(filter, yMax-2, 3, ">> ");
+    wgetstr(filter, str);
+
+    if (strcmp(str, "q") != 0 && strcmp(str, "") !=0) editMenu(yMax, xMax, str);
+
+    return 0;
 }
 
 int searchMenu(int yMax, int xMax) {
 
-    char* choices[5] = {"By Index", "By Title", "By Year", "By Runtime", "Back"};
+    char* choices[4] = {"By Index", "By Title", "By Genre", "Back"};
     int choice;
     int highlight = 1;
 
@@ -295,7 +361,7 @@ int searchMenu(int yMax, int xMax) {
 
     while(1) {
         // print highlight
-        for (int i=1; i<=5; i++) {
+        for (int i=1; i<=4; i++) {
             if (i == highlight)
                 wattron(search, A_REVERSE);
             mvwprintw(search, i+1, 2, choices[i-1]);
@@ -308,12 +374,12 @@ int searchMenu(int yMax, int xMax) {
             case KEY_UP:
                 highlight--;
                 if (highlight == 0)
-                    highlight = 1;
+                    highlight = 4;
                 break;
             case KEY_DOWN:
                 highlight++;
-                if (highlight == 6)
-                    highlight = 5;
+                if (highlight == 5)
+                    highlight = 1;
                 break;
             default:
                 break;
@@ -325,35 +391,112 @@ int searchMenu(int yMax, int xMax) {
     }
 
     char str[30];
+    clearBox(search, yMax, xMax);
 
     switch(highlight-1) {
         case 0:
-            clearBox(search, yMax, xMax);
             mvwprintw(search, 2, 1, "Index : ");   
             wgetstr(search, str);
-            //RBT* search_result = NULL;
-            //TREE_SEARCH_LIST_INDEX(RBT, &search_result, atoi(str));
-            //mvwprintw(search, 4, 1, "TItle: %s", search_result->title);
+            TREE_SEARCH_LIST_INDEX(RBT_INDEX, atoi(str));
             break;
         case 1:
-            clearBox(search, yMax, xMax);
             mvwprintw(search, 2, 1, "Title : "); 
+            wgetstr(search, str);
+            TREE_SEARCH_LIST_TITLE(RBT_TITLE, str);
             break;
         case 2:
-            clearBox(search, yMax, xMax);
-            mvwprintw(search, 2, 1, "Year : "); 
-            break;
-        case 3:
-            clearBox(search, yMax, xMax);
-            mvwprintw(search, 2, 1, "Runtime : "); 
-            break;
-        case 4:
-            return 0;
+            mvwprintw(search, 2, 1, "Genre : "); 
+            wgetstr(search, str);
+            TREE_SEARCH_LIST_GENRE(RBT_TITLE, str);
             break;
         default:
+            return 0;
+    }
+
+    clearBox(search, yMax, xMax);
+
+    mvwprintw(search, 2, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
+    for (int i=4; i<yMax-5; i++) {
+        if (empty()) break;
+        pop(search, i);
+    }
+    freeStack();
+
+    echo();
+    mvwprintw(search, yMax-3, 2, "Enter index to edit or 'q' to quit");
+    mvwprintw(search, yMax-2, 3, ">> ");
+    wgetstr(search, str);
+
+    if (strcmp(str, "q") != 0 && strcmp(str, "") !=0) editMenu(yMax, xMax, str);
+
+    return 0;
+}
+
+int editMenu(int yMax, int xMax, char* input) {
+
+    char* choices[5] = {"CREATE MOVIE", "RETRIEVE MOVIE", "UPDATE MOVIE", "DELETE MOVIE", "BACK"};
+    int choice;
+    int highlight = 1;
+
+    WINDOW* edit = newwin(yMax, xMax, 0, 0);
+    box(edit, 0,0);
+    wrefresh(edit);
+    keypad(edit, true);
+
+    mvwprintw(edit, 0, 0, "Edit Menu");
+
+    while(1) {
+        // print highlight
+        for (int i=1; i<=5; i++) {
+            if (i == highlight)
+                wattron(edit, A_REVERSE);
+            mvwprintw(edit, i+1, 2, choices[i-1]);
+            wattroff(edit, A_REVERSE);
+        }
+        choice = wgetch(edit);
+
+        // switch up and down
+        switch(choice) {
+            case KEY_UP:
+                highlight--;
+                if (highlight == 0)
+                    highlight = 5;
+                break;
+            case KEY_DOWN:
+                highlight++;
+                if (highlight == 6)
+                    highlight = 1;
+                break;
+            default:
+                break;
+        }
+
+        // on the press of 'enter'
+        if (choice == 10)
             break;
     }
 
+    clearBox(edit, yMax, xMax);
+    setMax(yMax-5);
+
+    switch(highlight-1) {
+        case 0:
+            createMenu(yMax, xMax);
+            break;
+        case 1:
+            retrieveMenu(yMax, xMax, input);
+            break;
+        case 2:
+            updateMenu(yMax, xMax, input);
+            break;
+        case 3:
+            deleteMenu(yMax, xMax, input);
+            break;
+        case 4:
+            return 0;
+        default:
+            break;
+    }
 
     return 0;
 }
@@ -364,36 +507,151 @@ int createMenu(int yMax, int xMax) {
     wrefresh(create);
     keypad(create, true);
 
-    char index[10], title[30], year[10], runtime[10], genres[30];
+    echo();
+    char index[10], title[30], year[10], runtime[10], genres[30], media[20], y[5], m[3], d[3];
 
     mvwprintw(create, 0, 0, "Create Menu");
-    mvwprintw(create, 2, 1, "Index : ");
+    mvwprintw(create, 2, 1, "Index");
+    mvwprintw(create, 3, 2, ">> ");
     wgetstr(create, index);
-    mvwprintw(create, 3, 1, "Title : ");
+    mvwprintw(create, 4, 1, "Title");
+    mvwprintw(create, 5, 2, ">> ");
     wgetstr(create, title);
-    mvwprintw(create, 4, 1, "Year : ");
+    mvwprintw(create, 6, 1, "Year");
+    mvwprintw(create, 7, 2, ">> ");
     wgetstr(create, year);
-    mvwprintw(create, 5, 1, "Runtime : ");
+    mvwprintw(create, 8, 1, "Runtime");
+    mvwprintw(create, 9, 2, ">> ");
     wgetstr(create, runtime);
-    mvwprintw(create, 6, 1, "Generes : ");
+    mvwprintw(create, 10, 1, "Genres");
+    mvwprintw(create, 11, 2, ">> ");
     wgetstr(create, genres);
+    mvwprintw(create, 12, 1, "Media");
+    mvwprintw(create, 13, 2, ">> ");
+    wgetstr(create, media);
+    mvwprintw(create, 14, 1, "Year");
+    mvwprintw(create, 15, 2, ">> ");
+    wgetstr(create, y);
+    mvwprintw(create, 16, 1, "Month");
+    mvwprintw(create, 17, 2, ">> ");
+    wgetstr(create, m);
+    mvwprintw(create, 18, 1, "Day");
+    mvwprintw(create, 19, 2, ">> ");
+    wgetstr(create, d);
+
+    CREATE_MOVIE(filename, &RBT_INDEX, index, title, year, runtime, genres, media, m, d, y);
+    updateRBT();
+
+    endwin();
 
     return 0;
 }
 
-int retrieveMenu(int yMax, int xMax) {
-    int t = yMax + xMax;
-    return t;
+int retrieveMenu(int yMax, int xMax, char* input) {
+
+    WINDOW* retrieve = newwin(yMax, xMax, 0, 0);
+    box(retrieve, 0,0);
+    wrefresh(retrieve);
+    keypad(retrieve, true);
+
+    mvwprintw(retrieve, 0, 0, "Retrieve Menu");
+
+    clearBox(retrieve, yMax, xMax);
+    INORDER_TREE_WALK_DELETED(RBT_INDEX);
+    mvwprintw(retrieve, 2, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
+    for (int i=4; i<yMax-5; i++) {
+        if (empty()) break;
+        pop(retrieve, i);
+    }
+    freeStack();
+
+    if (strcmp(input, "") == 0) {
+        // ask
+        echo();
+        mvwprintw(retrieve, yMax-3, 1, "Enter the index of the movie to retrieve");
+        mvwprintw(retrieve, yMax-2, 2, ">> ");
+        wgetstr(retrieve, str);
+        RETRIEVE_MOVIE(filename, &RBT_INDEX, str);
+    } else {
+        RETRIEVE_MOVIE(filename, &RBT_INDEX, input);
+    }
+    updateRBT();
+
+    endwin();
+
+    return 0;
 }
 
-int updateMenu(int yMax, int xMax) {
-    int t = yMax + xMax;
-    return t;
+int updateMenu(int yMax, int xMax, char* input) {
+    WINDOW* update = newwin(yMax, xMax, 0, 0);
+    box(update, 0,0);
+    wrefresh(update);
+    keypad(update, true);
+
+    echo();
+    char index[10], title[30], year[10], runtime[10], genres[30], media[20], y[5], m[3], d[3];
+
+    mvwprintw(update, 0, 0, "Update Menu");
+    mvwprintw(update, 2, 1, "Index");
+    mvwprintw(update, 3, 2, ">> ");
+    wgetstr(update, index);
+    mvwprintw(update, 4, 1, "Title");
+    mvwprintw(update, 5, 2, ">> ");
+    wgetstr(update, title);
+    mvwprintw(update, 6, 1, "Year");
+    mvwprintw(update, 7, 2, ">> ");
+    wgetstr(update, year);
+    mvwprintw(update, 8, 1, "Runtime");
+    mvwprintw(update, 9, 2, ">> ");
+    wgetstr(update, runtime);
+    mvwprintw(update, 10, 1, "Genres");
+    mvwprintw(update, 11, 2, ">> ");
+    wgetstr(update, genres);
+    mvwprintw(update, 12, 1, "Media");
+    mvwprintw(update, 13, 2, ">> ");
+    wgetstr(update, media);
+    mvwprintw(update, 14, 1, "Year");
+    mvwprintw(update, 15, 2, ">> ");
+    wgetstr(update, y);
+    mvwprintw(update, 16, 1, "Month");
+    mvwprintw(update, 17, 2, ">> ");
+    wgetstr(update, m);
+    mvwprintw(update, 18, 1, "Day");
+    mvwprintw(update, 19, 2, ">> ");
+    wgetstr(update, d);
+
+    UPDATE_MOVIE(filename, &RBT_INDEX, index, title, year, runtime, genres, media, m, d, y);
+    updateRBT();
+
+    endwin();
+
+    return 0;
 }
 
-int deleteMenu(int yMax, int xMax) {
-    int t = yMax + xMax;
-    return t;
+int deleteMenu(int yMax, int xMax, char* input) {
+
+    WINDOW* delete = newwin(yMax, xMax, 0, 0);
+    box(delete, 0,0);
+    wrefresh(delete);
+    keypad(delete, true);
+
+    mvwprintw(delete, 0, 0, "Delete Menu");
+
+    if (strcmp(input, "") == 0) {
+        // ask
+        echo();
+        mvwprintw(delete, 2, 1, "Enter the index of the movie to delete");
+        mvwprintw(delete, 3, 2, ">> ");
+        wgetstr(delete, str);
+        DELETE_MOVIE(filename, &RBT_INDEX, str);
+    } else {
+        DELETE_MOVIE(filename, &RBT_INDEX, input);
+    }
+    updateRBT();
+
+    endwin();
+
+    return 0;
 }
 
 RBT* loadMenu(int yMax, int xMax) {
@@ -457,7 +715,7 @@ void parseFILE(char *tsvfile, RBT** RBT) {
 	else {
         time_t t = time(NULL); struct tm tm = *localtime(&t);
 		char line[300]; int row=0, col=0;
-		while (fgets(line, 300, fp) && row < 1000) {
+		while (fgets(line, 300, fp) && row < 100) {
 			strtok(line, "\n"); char *ptr = strdup(line), *word, *index, *title, *year, *runtime, *genres;
 			while ((word = strsep(&ptr, "\t"))) {
                 if (strcmp(word, "\\N") == 0) word = "(null)";
@@ -477,4 +735,15 @@ void parseFILE(char *tsvfile, RBT** RBT) {
 		}
 	}
     fclose(fp);
+}
+
+void updateRBT() {
+    RBT_EXPORT_RUNTIME(RBT_INDEX, &RBT_RUNTIME);
+    RBT_EXPORT_YEAR(RBT_INDEX, &RBT_YEAR);
+    RBT_EXPORT_TITLE(RBT_INDEX, &RBT_TITLE);
+}
+
+void checkLog(char* username) {
+    strcpy(filename, "./log/"); strcat(filename, username); strcat(filename, ".log");
+    readLog(filename, &RBT_INDEX);
 }
