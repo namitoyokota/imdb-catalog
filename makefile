@@ -1,4 +1,4 @@
-OBJS = ./src/main.o ./src/rbt.o ./src/crud.o ./src/logger.o
+OBJS = ./src/main.o ./src/stack.o ./src/rbt.o ./src/crud.o ./src/logger.o
 OOPTS = -Wall -Wextra -g -c
 LOPTS = -Wall -Wextra -g
 
@@ -20,6 +20,9 @@ download :
 
 main.o : ./src/main.c
 		gcc $(OOPTS) ./src/main.c
+
+stack.o : ./src/stack.c ./lib/stack.h
+		gcc $(OOPTS) ./src/stack.c
 
 rbt.o : ./src/rbt.c ./lib/rbt.h
 		gcc $(OOPTS) ./src/rbt.c

@@ -3,17 +3,18 @@
 #include <curses.h>
 #include <string.h>
 #include <time.h>
+#include "../lib/stack.h"
 #include "../lib/rbt.h"
 #include "../lib/crud.h"
 #include "../lib/logger.h"
 
 // MENU
 int mainMenu(int, int);
-NODE* loadMenu(int, int);
+RBT* loadMenu(int, int);
     // sort, filter, search
-    int sortMenu(NODE*, int, int);
-    int filterMenu(NODE*, int, int);
-    int searchMenu(NODE*, int, int);
+    int sortMenu(int, int);
+    int filterMenu(int, int);
+    int searchMenu(int, int);
     // CRUD
     int createMenu(int, int);
     int retrieveMenu(int, int);
@@ -23,7 +24,13 @@ NODE* loadMenu(int, int);
     int helpMenu(int, int);
     void clearBox(WINDOW*, int, int);
 // FILE IO
-void parseFILE(char*, NODE**);
+void parseFILE(char*, RBT**);
+
+RBT* RBT_INDEX;
+RBT* RBT_TITLE;
+RBT* RBT_YEAR;
+RBT* RBT_RUNTIME;
+
 
 
 
@@ -34,8 +41,8 @@ void parseFILE(char*, NODE**);
 int main(void) {
 
     // 0 = read, 1 = write
-    int enable = 1;
-    int opt = 0;
+    int enable = 0;
+    int opt = 1;
 
     // console ui
     if (opt == 0) {
@@ -43,31 +50,30 @@ int main(void) {
         char* username = "namito";
         char filename[30] = "./logs/"; strcat(filename, username); strcat(filename, ".log");
 
-        NODE* RBT = NULL;
-        parseFILE("./data/movie_records.tsv", &RBT);
+        parseFILE("./data/movie_records.tsv", &RBT_INDEX);
 
         if (enable == 0) {
-            readLog(filename, &RBT);
-            INORDER_TREE_WALK(RBT);
+            readLog(filename, &RBT_INDEX);
+            //INORDER_TREE_WALK(RBT);
 
-            printf("\n\n");
+            printf("\n\nsearch don\n");
 
-            NODE* search = NULL;
-            TREE_SEARCH_LIST_TITLE(RBT, &search, "hAMLET");
+            //RBT* search = NULL;
+            //TREE_SEARCH_LIST_TITLE(RBT, &search, "don");
             //INORDER_TREE_WALK(search);
 
             //TREE_SEARCH_LIST_INDEX(RBT, &search, 1000);
             //INORDER_TREE_WALK(search);
         } else {    
             printf("\nadded 1000\n");
-            CREATE_MOVIE(filename, &RBT, "1000", "Title of the New Movie", "2019", "90", "Comedy", "DVD", "10", "30", "2018");
-            INORDER_TREE_WALK(RBT);
+            CREATE_MOVIE(filename, &RBT_INDEX, "1000", "Title of the New Movie", "2019", "90", "Comedy", "DVD", "10", "30", "2018");
+            //INORDER_TREE_WALK(RBT);
 
             printf("\ndeleting 335\n");
-            DELETE_MOVIE(filename, &RBT, "335");
+            DELETE_MOVIE(filename, &RBT_INDEX, "335");
             printf("\nupdating 502\n");
-            UPDATE_MOVIE(filename, &RBT, "502", "Namito", "1999", "90", "Comedy,Fantasy", "BluRay", "8", "13", "1999");
-            INORDER_TREE_WALK(RBT);
+            UPDATE_MOVIE(filename, &RBT_INDEX, "502", "Namito", "1999", "90", "Comedy,Fantasy", "BluRay", "8", "13", "1999");
+            //INORDER_TREE_WALK(RBT);
         }
 
         /*
@@ -96,19 +102,22 @@ int main(void) {
 
         int yMax, xMax;
         getmaxyx(stdscr, yMax, xMax);
-        NODE* RBT = loadMenu(yMax, xMax);
+        RBT_INDEX = loadMenu(yMax, xMax);
+        RBT_EXPORT_RUNTIME(RBT_INDEX, &RBT_RUNTIME);
+        RBT_EXPORT_YEAR(RBT_INDEX, &RBT_YEAR);
+        RBT_EXPORT_TITLE(RBT_INDEX, &RBT_TITLE);
 
         while(1) {
             int choice = mainMenu(yMax, xMax);
             switch(choice) {
                 case 0:
-                    sortMenu(RBT, yMax, xMax);
+                    sortMenu(yMax, xMax);
                     break;
                 case 1:
-                    filterMenu(RBT, yMax, xMax);
+                    filterMenu(yMax, xMax);
                     break;
                 case 2:
-                    searchMenu(RBT, yMax, xMax);
+                    searchMenu(yMax, xMax);
                     break;
                 case 3:
                     helpMenu(yMax, xMax);
@@ -174,7 +183,7 @@ int mainMenu(int yMax, int xMax) {
     return highlight-1;
 }
 
-int sortMenu(NODE* RBT, int yMax, int xMax) {
+int sortMenu(int yMax, int xMax) {
 
     char* choices[8] = {"Ascending Index", "Descending Index", "Alphabetical Title", "Ascending Year", "Descending Year",
                         "Ascending Runtime", "Descending Runtime", "Back"};
@@ -219,22 +228,32 @@ int sortMenu(NODE* RBT, int yMax, int xMax) {
             break;
     }
 
+    clearBox(sort, yMax, xMax);
+
+    STACK* s;
+    setMax(yMax-5);
+
     switch(highlight-1) {
         case 0:
-            INORDER_TREE_WALK(RBT);
-            wgetch(sort);
+            INORDER_STACK(RBT_INDEX, s);
             break;
         case 1:
+            OUTORDER_STACK(RBT_INDEX, s);
             break;
         case 2:
+            INORDER_STACK(RBT_TITLE, s);
             break;
         case 3:
+            INORDER_STACK(RBT_YEAR, s);
             break;
         case 4:
+            OUTORDER_STACK(RBT_YEAR, s);
             break;
         case 5:
+            INORDER_STACK(RBT_RUNTIME, s);
             break;
         case 6:
+            OUTORDER_STACK(RBT_RUNTIME, s);
             break;
         case 7:
             return 0;
@@ -243,16 +262,23 @@ int sortMenu(NODE* RBT, int yMax, int xMax) {
             break;
     }
 
+    mvwprintw(sort, 2, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
+    for (int i=4; i<yMax-5; i++) {
+        if (empty()) break;
+        pop(sort, i);
+    }
+    wgetch(sort);
+
     return 0;
 }
 
-int filterMenu(NODE* RBT, int yMax, int xMax) {
+int filterMenu(int yMax, int xMax) {
     int t = yMax + xMax;
 
     return t;
 }
 
-int searchMenu(NODE* RBT, int yMax, int xMax) {
+int searchMenu(int yMax, int xMax) {
 
     char* choices[5] = {"By Index", "By Title", "By Year", "By Runtime", "Back"};
     int choice;
@@ -298,10 +324,16 @@ int searchMenu(NODE* RBT, int yMax, int xMax) {
             break;
     }
 
+    char str[30];
+
     switch(highlight-1) {
         case 0:
             clearBox(search, yMax, xMax);
             mvwprintw(search, 2, 1, "Index : ");   
+            wgetstr(search, str);
+            //RBT* search_result = NULL;
+            //TREE_SEARCH_LIST_INDEX(RBT, &search_result, atoi(str));
+            //mvwprintw(search, 4, 1, "TItle: %s", search_result->title);
             break;
         case 1:
             clearBox(search, yMax, xMax);
@@ -322,8 +354,6 @@ int searchMenu(NODE* RBT, int yMax, int xMax) {
             break;
     }
 
-    char str[30];
-    wgetstr(search, str);
 
     return 0;
 }
@@ -366,7 +396,7 @@ int deleteMenu(int yMax, int xMax) {
     return t;
 }
 
-NODE* loadMenu(int yMax, int xMax) {
+RBT* loadMenu(int yMax, int xMax) {
     WINDOW* load = newwin(yMax, xMax, 0, 0);
     box(load, 0,0);
     wrefresh(load);
@@ -377,8 +407,7 @@ NODE* loadMenu(int yMax, int xMax) {
     mvwprintw(load, 2, 1, "Press any key to start loading data");
     wgetch(load);
 
-    NODE* RBT = NULL;
-    parseFILE("./data/movie_records", &RBT);
+    parseFILE("./data/movie_records.tsv", &RBT_INDEX);
 
     mvwprintw(load, 5, 1, "Loading process has completed. The data is now stored in memory");
     mvwprintw(load, 6, 1, "Press any key to continue..");
@@ -386,7 +415,7 @@ NODE* loadMenu(int yMax, int xMax) {
     wgetch(load);
     endwin();
 
-    return RBT;
+    return RBT_INDEX;
 }
 
 int helpMenu(int yMax, int xMax) {
@@ -422,13 +451,13 @@ void clearBox(WINDOW* win, int yMax, int xMax) {
     return;
 }
 
-void parseFILE(char *tsvfile, NODE** RBT) {
+void parseFILE(char *tsvfile, RBT** RBT) {
 	FILE *fp = fopen(tsvfile, "r");
 	if (fp == 0) printf("Error\n");
 	else {
         time_t t = time(NULL); struct tm tm = *localtime(&t);
 		char line[300]; int row=0, col=0;
-		while (fgets(line, 300, fp) && row < 10) {
+		while (fgets(line, 300, fp) && row < 1000) {
 			strtok(line, "\n"); char *ptr = strdup(line), *word, *index, *title, *year, *runtime, *genres;
 			while ((word = strsep(&ptr, "\t"))) {
                 if (strcmp(word, "\\N") == 0) word = "(null)";

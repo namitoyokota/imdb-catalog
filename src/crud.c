@@ -3,7 +3,7 @@
 #include "../lib/rbt.h"
 #include "../lib/logger.h"
 
-void CREATE_MOVIE(char* filename, NODE** root, char* index, char* title, char* year, char* runtime, char* genres, char* media, char* m, char* d, char* y) {
+void CREATE_MOVIE(char* filename, RBT** root, char* index, char* title, char* year, char* runtime, char* genres, char* media, char* m, char* d, char* y) {
     *root = RB_INSERT_INDEX(*root, 1, atoi(index), title, atoi(year), atoi(runtime), genres, media, atoi(m), atoi(d), atoi(y));
     if (strcmp(filename, "./logs/") != 0) {
         char message[100] = "Create,"; strcat(message, index); strcat(message, ","); strcat(message, title); strcat(message, ",");
@@ -14,8 +14,8 @@ void CREATE_MOVIE(char* filename, NODE** root, char* index, char* title, char* y
     }
 }
 
-void RETRIEVE_MOVIE(char* filename, NODE** root, char* index) {
-    NODE* search = TREE_SEARCH_INDEX(*root, atoi(index));
+void RETRIEVE_MOVIE(char* filename, RBT** root, char* index) {
+    RBT* search = TREE_SEARCH_INDEX(*root, atoi(index));
     if (search == NULL) printf("Error. A movie with the inputted index does not exist");
     else RBT_MODIFY(search, 1, "", "", "", "", "", "", 0,0,0);
     if (strcmp(filename, "./logs/") != 0) {
@@ -24,8 +24,8 @@ void RETRIEVE_MOVIE(char* filename, NODE** root, char* index) {
     }
 }
 
-void UPDATE_MOVIE(char* filename, NODE** root, char* index, char* title, char* year, char* runtime, char* genres, char* media, char* m, char* d, char* y) {
-    NODE* search = TREE_SEARCH_INDEX(*root, atoi(index));
+void UPDATE_MOVIE(char* filename, RBT** root, char* index, char* title, char* year, char* runtime, char* genres, char* media, char* m, char* d, char* y) {
+    RBT* search = TREE_SEARCH_INDEX(*root, atoi(index));
     if (search == NULL)  {
         printf("Error. A movie with the inputted index does not exist\n\n");
     } else {
@@ -43,8 +43,8 @@ void UPDATE_MOVIE(char* filename, NODE** root, char* index, char* title, char* y
     }
 }
 
-void DELETE_MOVIE(char* filename, NODE** root, char* index) {
-    NODE* search = NULL;
+void DELETE_MOVIE(char* filename, RBT** root, char* index) {
+    RBT* search = NULL;
     search = TREE_SEARCH_INDEX(*root, atoi(index));
     if (search == NULL) printf("Error. A movie with the inputted index does not exist\n\n");
     else RBT_MODIFY(search, 0, "", "", "", "", "", "", 0,0,0);

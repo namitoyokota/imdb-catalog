@@ -12,7 +12,7 @@ void printLog(char* filename, char* message) {
     }
 }
 
-void readLog(char* filename, NODE** root) {
+void readLog(char* filename, RBT** root) {
     printf("readLog\n");
     FILE* fp = fopen(filename, "r");
     if (fp == 0) {

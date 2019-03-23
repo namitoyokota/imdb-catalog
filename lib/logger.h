@@ -5,6 +5,6 @@
 #include "../lib/rbt.h"
 
 extern void printLog(char*, char*);
-extern void readLog(char*, NODE**);
+extern void readLog(char*, RBT**);
 
 #endif
