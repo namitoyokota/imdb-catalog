@@ -15,6 +15,7 @@ void readLog(char* filename, RBT** root) {
     printf("readLog\n");
     FILE* fp = fopen(filename, "r");
     if (fp == 0) {
+        return;
         // file not found
     } else {
         // file found
