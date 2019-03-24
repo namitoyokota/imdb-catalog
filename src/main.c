@@ -715,7 +715,7 @@ void parseFILE(char *tsvfile, RBT** RBT) {
 	else {
         time_t t = time(NULL); struct tm tm = *localtime(&t);
 		char line[300]; int row=0, col=0;
-		while (fgets(line, 300, fp) && row < 100) {
+		while (fgets(line, 300, fp) && row < 100000) {
 			strtok(line, "\n"); char *ptr = strdup(line), *word, *index, *title, *year, *runtime, *genres;
 			while ((word = strsep(&ptr, "\t"))) {
                 if (strcmp(word, "\\N") == 0) word = "(null)";
