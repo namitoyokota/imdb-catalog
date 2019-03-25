@@ -58,4 +58,6 @@ void RBT_MODIFY(RBT*, bool, char*, char*, char*, char*, char*, char*, int, int, 
 void OUTORDER_STACK(RBT*);
 void INORDER_STACK(RBT*);
 
+void freeTree(RBT*);
+
 #endif

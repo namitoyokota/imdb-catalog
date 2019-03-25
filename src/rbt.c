@@ -512,3 +512,11 @@ void OUTORDER_STACK(RBT* root) {
         OUTORDER_STACK(root->right);
     }
 }
+
+void freeTree(RBT* root) {
+    free(root->title);
+    free(root->genres);
+    free(root->media);
+    freeTree(root->left);
+    freeTree(root->right);
+}

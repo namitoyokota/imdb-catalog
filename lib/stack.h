@@ -8,10 +8,11 @@
 enum boo {T,F};
 typedef struct stack STACK;
 
+STACK* top;
+
 void PUSH(bool enable, int index, char* title, int year, int runtime, char *genres, char* media, int m, int d, int y);
 void POP(WINDOW*, int);
 int ISEMPTY();
-
-STACK* top;
+void CLEAR();
 
 #endif

@@ -1,6 +1,19 @@
 #include "../lib/main.h"
 
 int main(void) {
+    // malloc strings
+    filename = (char*) malloc(30*sizeof(char));
+    str = (char*) malloc(30*sizeof(char));
+    movie_index = (char*) malloc(10*sizeof(char));
+    movie_title = (char*) malloc(30*sizeof(char));
+    movie_year = (char*) malloc(10*sizeof(char));
+    movie_runtime = (char*) malloc(10*sizeof(char));
+    movie_genres = (char*) malloc(30*sizeof(char));
+    movie_media = (char*) malloc(20*sizeof(char));
+    movie_y = (char*) malloc(5*sizeof(char));
+    movie_m = (char*) malloc(3*sizeof(char));
+    movie_d = (char*) malloc(3*sizeof(char));
+    
     // initialize curses screen and get find yMax and xMax from console
     initscr(); noecho(); cbreak();
     getmaxyx(stdscr, yMax, xMax);
@@ -35,6 +48,16 @@ int main(void) {
             default: break;
         }
     }
+
+    // free 
+    free(filename);
+    free(str);
+    freeTree(RBT_INDEX);
+    freeTree(RBT_TITLE);
+    freeTree(RBT_TITLE);
+    freeTree(RBT_RUNTIME);
+
+    // bye bye
     return 0;
 }
 
@@ -131,6 +154,7 @@ void sortMenu() {
         if (ISEMPTY()) break;
         POP(sort, i);
     } 
+    CLEAR();
 
     // crud option
     echo();
@@ -214,7 +238,7 @@ void filterMenu() {
         if (ISEMPTY()) break;
         POP(filter, i);
     }
-    
+    CLEAR();
 
     // crud option
     echo();
@@ -288,6 +312,7 @@ void searchMenu() {
         if (ISEMPTY()) break;
         POP(search, i);
     }
+    CLEAR();
 
     // crud options
     echo();
@@ -347,45 +372,44 @@ void editMenu(char* input) {
 }
 
 // This function creates a new record and insert to RBT
-void createMenu(int yMax, int xMax) {
+void createMenu() {
     // initialize window
     WINDOW* create = newwin(yMax, xMax, 0, 0);
     box(create, 0,0); wrefresh(create);
     keypad(create, true); echo();
-    char index[10], title[30], year[10], runtime[10], genres[30], media[20], y[5], m[3], d[3];
 
     // user inputs
     mvwprintw(create, 0, 0, "Create Menu");
     mvwprintw(create, 2, 1, "Index");
     mvwprintw(create, 3, 2, ">> ");
-    wgetstr(create, index);
+    wgetstr(create, movie_index);
     mvwprintw(create, 4, 1, "Title");
     mvwprintw(create, 5, 2, ">> ");
-    wgetstr(create, title);
+    wgetstr(create, movie_title);
     mvwprintw(create, 6, 1, "Year");
     mvwprintw(create, 7, 2, ">> ");
-    wgetstr(create, year);
+    wgetstr(create, movie_year);
     mvwprintw(create, 8, 1, "Runtime");
     mvwprintw(create, 9, 2, ">> ");
-    wgetstr(create, runtime);
+    wgetstr(create, movie_runtime);
     mvwprintw(create, 10, 1, "Genres");
     mvwprintw(create, 11, 2, ">> ");
-    wgetstr(create, genres);
+    wgetstr(create, movie_genres);
     mvwprintw(create, 12, 1, "Media");
     mvwprintw(create, 13, 2, ">> ");
-    wgetstr(create, media);
+    wgetstr(create, movie_media);
     mvwprintw(create, 14, 1, "Year");
     mvwprintw(create, 15, 2, ">> ");
-    wgetstr(create, y);
+    wgetstr(create, movie_y);
     mvwprintw(create, 16, 1, "Month");
     mvwprintw(create, 17, 2, ">> ");
-    wgetstr(create, m);
+    wgetstr(create, movie_m);
     mvwprintw(create, 18, 1, "Day");
     mvwprintw(create, 19, 2, ">> ");
-    wgetstr(create, d);
+    wgetstr(create, movie_d);
 
     // create movie and update RBT
-    CREATE_MOVIE(filename, &RBT_INDEX, index, title, year, runtime, genres, media, m, d, y);
+    CREATE_MOVIE(filename, &RBT_INDEX, movie_index, movie_title, movie_year, movie_runtime, movie_genres, movie_media, movie_m, movie_d, movie_y);
     updateRBT();
     endwin();
     // close window
@@ -406,13 +430,15 @@ void retrieveMenu(char* input) {
         if (ISEMPTY()) break;
         POP(retrieve, i);
     }
+    CLEAR();
 
     // if input is NULL ask for input
     if (strcmp(input, "") == 0) {
         echo();
-        mvwprintw(retrieve, yMax-3, 1, "Enter the index of the movie to retrieve");
+        mvwprintw(retrieve, yMax-3, 1, "Enter the index to retrieve or 'q' to quit");
         mvwprintw(retrieve, yMax-2, 2, ">> ");
         wgetstr(retrieve, str);
+        if(strcmp(str, "q") == 0) return;
         RETRIEVE_MOVIE(filename, &RBT_INDEX, str);
     }
     // otherwise use the input as index to retrieve
@@ -431,40 +457,39 @@ void updateMenu(char* input) {
     WINDOW* update = newwin(yMax, xMax, 0, 0);
     box(update, 0,0); wrefresh(update);
     keypad(update, true); echo();
-    char index[10], title[30], year[10], runtime[10], genres[30], media[20], y[5], m[3], d[3];
 
     // take user input
     mvwprintw(update, 0, 0, "Update Menu");
     mvwprintw(update, 2, 1, "Index");
     mvwprintw(update, 3, 2, ">> ");
-    wgetstr(update, index);
+    wgetstr(update, movie_index);
     mvwprintw(update, 4, 1, "Title");
     mvwprintw(update, 5, 2, ">> ");
-    wgetstr(update, title);
+    wgetstr(update, movie_title);
     mvwprintw(update, 6, 1, "Year");
     mvwprintw(update, 7, 2, ">> ");
-    wgetstr(update, year);
+    wgetstr(update, movie_year);
     mvwprintw(update, 8, 1, "Runtime");
     mvwprintw(update, 9, 2, ">> ");
-    wgetstr(update, runtime);
+    wgetstr(update, movie_runtime);
     mvwprintw(update, 10, 1, "Genres");
     mvwprintw(update, 11, 2, ">> ");
-    wgetstr(update, genres);
+    wgetstr(update, movie_genres);
     mvwprintw(update, 12, 1, "Media");
     mvwprintw(update, 13, 2, ">> ");
-    wgetstr(update, media);
+    wgetstr(update, movie_media);
     mvwprintw(update, 14, 1, "Year");
     mvwprintw(update, 15, 2, ">> ");
-    wgetstr(update, y);
+    wgetstr(update, movie_y);
     mvwprintw(update, 16, 1, "Month");
     mvwprintw(update, 17, 2, ">> ");
-    wgetstr(update, m);
+    wgetstr(update, movie_m);
     mvwprintw(update, 18, 1, "Day");
     mvwprintw(update, 19, 2, ">> ");
-    wgetstr(update, d);
+    wgetstr(update, movie_d);
 
     // update movie and rbts
-    UPDATE_MOVIE(filename, &RBT_INDEX, index, title, year, runtime, genres, media, m, d, y);
+    UPDATE_MOVIE(filename, &RBT_INDEX, movie_index, movie_title, movie_year, movie_runtime, movie_genres, movie_media, movie_m, movie_d, movie_y);
     updateRBT();
     endwin();
     // close window
@@ -481,9 +506,10 @@ void deleteMenu(char* input) {
     // if user input is NULL ask for input
     if (strcmp(input, "") == 0) {
         echo();
-        mvwprintw(delete, 2, 1, "Enter the index of the movie to delete");
+        mvwprintw(delete, 2, 1, "Enter the index to delete or 'q' to quit");
         mvwprintw(delete, 3, 2, ">> ");
         wgetstr(delete, str);
+        if(strcmp(str, "q") == 0) return;
         DELETE_MOVIE(filename, &RBT_INDEX, str);
     }
     // otherwise use the given input as index to delete from rbt
@@ -552,19 +578,14 @@ void clearBox(WINDOW* win) {
     return;
 }
 
-// This function parses the .tsv file downloaded from the IMDb website
-/*
-    NOTES:
-        during the download process, the makefile script edits the file to ignore all the other lines except for movies.
-        this function assumes that the script is ran and stores all of the movie datasets
-*/
+// This function parses the .tsv file downloaded from the IMDb website. During the download process,
+// the makefile script edits the file to ignore all the other lines except for movies.
+// this function assumes that the script is ran and stores all of the movie datasets
 void parseFILE(char *tsvfile, RBT** RBT) {
     // open file
 	FILE *fp = fopen(tsvfile, "r");
-
     // file does not exist
 	if (fp == 0) return;
-
     // file does exist
 	else {
         // initialize time variable to get current date
@@ -574,22 +595,22 @@ void parseFILE(char *tsvfile, RBT** RBT) {
         // get line until NULL
 		while (fgets(line, 500, fp)) {
             // cut the line at '\n'
-			strtok(line, "\n"); char *ptr = strdup(line), *word, *index, *title, *year, *runtime, *genres;
-			while ((word = strsep(&ptr, "\t"))) {
-                if (strcmp(word, "\\N") == 0) word = "(null)";
+			strtok(line, "\n"); char *ptr = strdup(line), *str;
+			while ((str = strsep(&ptr, "\t"))) {
+                if (strcmp(str, "\\N") == 0) str = "(null)";
 				switch(col) {
-					case 0: word[0]='0'; word[1]='0'; index = word; break;
-					case 2: title = word; break;
-					case 5: year = word; break;
-					case 7: runtime = word; break;
-					case 8: genres = word; break;
+					case 0: str[0]='0'; str[1]='0'; movie_index = str; break;
+					case 2: movie_title = str; break;
+					case 5: movie_year = str; break;
+					case 7: movie_runtime = str; break;
+					case 8: movie_genres = str; break;
 					default: break;
 				}
-				if (strcmp(word, "\0") == 0) break;
+				if (strcmp(str, "\0") == 0) break;
 				col++;
 			}
             // insert to the rbt
-			*RBT = RB_INSERT_INDEX(*RBT, '1', atoi(index), title, atoi(year), atoi(runtime), genres, NULL, tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900);
+			*RBT = RB_INSERT_INDEX(*RBT, '1', atoi(movie_index), movie_title, atoi(movie_year), atoi(movie_runtime), movie_genres, NULL, tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900);
 			row++; col=0;
 		}
 	}
@@ -607,4 +628,5 @@ void updateRBT() {
 void checkLog(char* username) {
     strcpy(filename, "./log/"); strcat(filename, username); strcat(filename, ".log");
     readLog(filename, &RBT_INDEX);
+    updateRBT();
 }
