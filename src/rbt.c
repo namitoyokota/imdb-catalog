@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include "../lib/rbt.h"
 #include "../lib/stack.h"
 
+enum boo {T,F};
 enum type {RED,BLACK};
 
 struct rbt {
@@ -13,7 +13,7 @@ struct rbt {
     RBT* right;
     RBT* parent;
 
-    bool enable;
+    enum boo enable;
     int index;
     char* title;
     int year;

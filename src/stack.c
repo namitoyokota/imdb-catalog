@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <curses.h>
 #include "../lib/stack.h"
 
+enum boo {T,F};
+
 struct stack {
-	bool enable;
+	enum boo enable;
     int index;
     char* title;
     int year;
