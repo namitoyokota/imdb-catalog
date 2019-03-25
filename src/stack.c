@@ -1,11 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <curses.h>
 #include "../lib/stack.h"
 
-enum boo {T,F};
-
+// Structure for STACK
 struct stack {
+    // STACK
+	STACK* next;
+    // MOVIE
 	enum boo enable;
     int index;
     char* title;
@@ -16,13 +15,9 @@ struct stack {
     int m;
     int d;
     int y;
-	STACK* next;
 };
-STACK* top;
-int MAX;
 
-void push(bool enable, int index, char* title, int year, int runtime, char *genres, char* media, int m, int d, int y)
-{
+void PUSH(bool enable, int index, char* title, int year, int runtime, char *genres, char* media, int m, int d, int y) {
     STACK* temp = (STACK*)malloc(sizeof(struct stack));
     temp->enable = enable;
     temp->index = index;
@@ -38,13 +33,10 @@ void push(bool enable, int index, char* title, int year, int runtime, char *genr
 	top = temp;
 }
 
-void pop(WINDOW* win, int y)
-{
-	if(empty()){
-		printf("Error: Stack is empty");
-		return;
-	}
-
+void POP(WINDOW* win, int y) {
+    // if the stack is empty,
+	if (ISEMPTY()) return;
+    // if the stack is not empty,
     mvwprintw(win, y, 2, "%d\t%s\t%d\t%d\t%s\t%s\t%d/%d/%d", top->index, top->title, top->year, top->runtime, top->genres, top->media, top->m, top->d, top->y);
 
 	STACK* temp;
@@ -53,15 +45,7 @@ void pop(WINDOW* win, int y)
 	top = temp;
 }
 
-bool empty() {
-    if (top == NULL) return true;
-    else return false;
-}
-
-void setMax(int max) {
-    MAX = max;
-}
-
-void freeStack() {
-    top = NULL;
+int ISEMPTY() {
+    if (top == NULL) return 1;
+    else return 0;
 }

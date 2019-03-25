@@ -1,55 +1,18 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <curses.h>
-#include <string.h>
-#include <time.h>
-#include "../lib/stack.h"
-#include "../lib/rbt.h"
-#include "../lib/crud.h"
-#include "../lib/logger.h"
-
-// MENU
-int mainMenu();
-RBT* loadMenu();
-    // sort, filter, search
-    void sortMenu();
-    void filterMenu();
-    void searchMenu();
-    // CRUD
-    void editMenu(char*);
-    void createMenu();
-    void retrieveMenu(char*);
-    void updateMenu(char*);
-    void deleteMenu(char*);
-    // other
-    void helpMenu();
-    void clearBox(WINDOW*);
-// FILE IO
-void parseFILE(char*, RBT**);
-void updateRBT();
-void checkLog(char*);
-
-STACK* LIST;
-RBT* RBT_INDEX;
-RBT* RBT_TITLE;
-RBT* RBT_YEAR;
-RBT* RBT_RUNTIME;
-int yMax, xMax;
-
-char str[30];
-char filename[30];
+#include "../lib/main.h"
 
 int main(void) {
-
+    // initialize curses screen and get find yMax and xMax from console
     initscr(); noecho(); cbreak();
     getmaxyx(stdscr, yMax, xMax);
+    // read in date with loadMenu()
     RBT_INDEX = loadMenu();
+    // update other sorrted rbts
     updateRBT();
 
+    // initialize the 'getting started' window
     WINDOW* initial  = newwin(yMax, xMax, 0, 0);
     box(initial, 0,0); wrefresh(initial);
     keypad(initial, true); echo();
-
     mvwprintw(initial, 0, 0, "Getting Started");
     mvwprintw(initial, 2, 1, "Enter username (this will determine your .log filename)");
     mvwprintw(initial, 3, 2, ">> ");
@@ -57,7 +20,9 @@ int main(void) {
     checkLog(str);
     clearBox(initial);
     endwin();
+    // close window
 
+    // call mainMenu() to call different menu functions
     while(1) {
         int choice = mainMenu();
         switch(choice) {
@@ -73,25 +38,25 @@ int main(void) {
     return 0;
 }
 
+// This function outputs the main menu for the user to interact from
 int mainMenu() {
-
-    char* choices[6] = {"Sort", "Filter", "Search", "CRUD", "Help", "Quit"};
-    int choice;
-    int highlight = 1;
-
+    // reset highlight
+    highlight=1;
+    // initialize window
     WINDOW* main = newwin(yMax, xMax, 0, 0);
     box(main, 0,0); wrefresh(main);
     keypad(main, true); noecho();
     mvwprintw(main, 0, 0, "IMDb Catalog");
     mvwprintw(main, 2, 3, "Use 'up arrow' and 'down arrow' and 'enter' to navigate through the menu");
 
+    // select tool with up and down arrow
     while(1) {
+        // print choices
         for (int i=1; i<=6; i++) {
             if (i == highlight) wattron(main, A_REVERSE);
-            mvwprintw(main, i+3, 2, choices[i-1]);
+            mvwprintw(main, i+3, 2, mainChoices[i-1]);
             wattroff(main, A_REVERSE);
-        }
-        choice = wgetch(main);
+        } choice = wgetch(main);
         switch(choice) {
             case KEY_UP:
                 highlight--;
@@ -105,30 +70,31 @@ int mainMenu() {
                 break;
             default: break;
         }
+        // on the press of enter
         if (choice == 10) break;
     }
     endwin();
+    // close window
     return highlight-1;
 }
 
+// This function allows users to pick one of the different sorting algorithms to be printed on the screen
 void sortMenu() {
-
-    char* choices[8] = {"Ascending Index", "Descending Index", "Alphabetical Title", "Ascending Year", "Descending Year",
-                        "Ascending Runtime", "Descending Runtime", "Back"};
-    int choice;
-    int highlight = 1;
-
+    // reset highlight
+    highlight=1;
+    // initialize window
     WINDOW* sort = newwin(yMax, xMax, 0, 0);
     box(sort, 0,0); wrefresh(sort); keypad(sort, true);
     mvwprintw(sort, 0, 0, "Sort Menu");
 
+    // select tool
     while(1) {
+        // print choices
         for (int i=1; i<=8; i++) {
             if (i == highlight) wattron(sort, A_REVERSE);
-            mvwprintw(sort, i+1, 2, choices[i-1]);
+            mvwprintw(sort, i+1, 2, sortChoices[i-1]);
             wattroff(sort, A_REVERSE);
-        }
-        choice = wgetch(sort);
+        } choice = wgetch(sort);
         switch(choice) {
             case KEY_UP:
                 highlight--;
@@ -142,28 +108,31 @@ void sortMenu() {
                 break;
             default: break;
         }
+        // on the press of enter
         if (choice == 10) break;
-    }
-    clearBox(sort);
-    setMax(yMax-5);
+    } clearBox(sort);
+
+    // create stack
     switch(highlight-1) {
-        case 0: INORDER_STACK(RBT_INDEX, LIST); break;
-        case 1: OUTORDER_STACK(RBT_INDEX, LIST); break;
-        case 2: INORDER_STACK(RBT_TITLE, LIST); break;
-        case 3: INORDER_STACK(RBT_YEAR, LIST); break;
-        case 4: OUTORDER_STACK(RBT_YEAR, LIST); break;
-        case 5: INORDER_STACK(RBT_RUNTIME, LIST); break;
-        case 6: OUTORDER_STACK(RBT_RUNTIME, LIST); break;
+        case 0: INORDER_STACK(RBT_INDEX); break;
+        case 1: OUTORDER_STACK(RBT_INDEX); break;
+        case 2: INORDER_STACK(RBT_TITLE); break;
+        case 3: INORDER_STACK(RBT_YEAR); break;
+        case 4: OUTORDER_STACK(RBT_YEAR); break;
+        case 5: INORDER_STACK(RBT_RUNTIME); break;
+        case 6: OUTORDER_STACK(RBT_RUNTIME); break;
         case 7: return;
         default: break;
     }
+
+    // print stack
     mvwprintw(sort, 2, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
     for (int i=4; i<yMax-5; i++) {
-        if (empty()) break;
-        pop(sort, i);
-    }
-    freeStack();
+        if (ISEMPTY()) break;
+        POP(sort, i);
+    } 
 
+    // crud option
     echo();
     mvwprintw(sort, yMax-3, 2, "Enter index to edit or 'q' to quit");
     mvwprintw(sort, yMax-2, 3, ">> ");
@@ -172,23 +141,23 @@ void sortMenu() {
     return;
 }
 
+// This function allows the users to pick a filtering method then prints a list
 void filterMenu() {
-
-    char* choices[5] = {"Set Minimum Year", "Set Maximum Year", "Set Minimum Runtime", "Set Maximum Runtime", "Back"};
-    int choice;
-    int highlight = 1;
-
+    // reset highlight
+    highlight=1;
+    // initialize window
     WINDOW* filter = newwin(yMax, xMax, 0, 0);
     box(filter, 0,0); wrefresh(filter); keypad(filter, true);
     mvwprintw(filter, 0, 0, "Filter Menu");
 
+    // select tool
     while(1) {
+        // print choices
         for (int i=1; i<=5; i++) {
             if (i == highlight) wattron(filter, A_REVERSE);
-            mvwprintw(filter, i+1, 2, choices[i-1]);
+            mvwprintw(filter, i+1, 2, filterChoices[i-1]);
             wattroff(filter, A_REVERSE);
-        }
-        choice = wgetch(filter);
+        } choice = wgetch(filter);
         switch(choice) {
             case KEY_UP:
                 highlight--;
@@ -203,11 +172,12 @@ void filterMenu() {
             default:
                 break;
         }
+        // on the press of enter 
         if (choice == 10) break;
-    }
+    } clearBox(filter);
     echo();
-    clearBox(filter);
-    setMax(yMax-5);
+
+    // create stack
     switch(highlight-1) {
         case 0:
             mvwprintw(filter, 2, 1, "Year");   
@@ -237,13 +207,16 @@ void filterMenu() {
         default: break;
     }
     clearBox(filter);
+
+    // print stack
     mvwprintw(filter, 2, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
     for (int i=4; i<yMax-5; i++) {
-        if (empty()) break;
-        pop(filter, i);
+        if (ISEMPTY()) break;
+        POP(filter, i);
     }
-    freeStack();
+    
 
+    // crud option
     echo();
     mvwprintw(filter, yMax-3, 2, "Enter index to edit or 'q' to quit");
     mvwprintw(filter, yMax-2, 3, ">> ");
@@ -252,25 +225,25 @@ void filterMenu() {
     return;
 }
 
+// This function allows users to pick which search method then search to print the list
 void searchMenu() {
-
-    char* choices[4] = {"By Index", "By Title", "By Genre", "Back"};
-    int choice;
-    int highlight = 1;
-
+    // reset highlight
+    highlight=1;
+    // initialize window
     WINDOW* search = newwin(yMax, xMax, 0, 0);
     box(search, 0,0); wrefresh(search);
     keypad(search, true); echo();
     mvwprintw(search, 0, 0, "Search Menu");
 
+    // select tool
     while(1) {
+        // print choices
         for (int i=1; i<=4; i++) {
             if (i == highlight)
                 wattron(search, A_REVERSE);
-            mvwprintw(search, i+1, 2, choices[i-1]);
+            mvwprintw(search, i+1, 2, searchChoices[i-1]);
             wattroff(search, A_REVERSE);
-        }
-        choice = wgetch(search);
+        } choice = wgetch(search);
         switch(choice) {
             case KEY_UP:
                 highlight--;
@@ -285,10 +258,11 @@ void searchMenu() {
             default:
                 break;
         }
+        // on the press of enter
         if (choice == 10) break;
-    }
-    char str[30];
-    clearBox(search);
+    } clearBox(search);
+
+    // create stack
     switch(highlight-1) {
         case 0:
             mvwprintw(search, 2, 1, "Index : ");   
@@ -306,14 +280,16 @@ void searchMenu() {
             TREE_SEARCH_LIST_GENRE(RBT_TITLE, str);
             break;
         default: return;
-    }
-    clearBox(search);
+    } clearBox(search);
+
+    // print stack
     mvwprintw(search, 2, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
     for (int i=4; i<yMax-5; i++) {
-        if (empty()) break;
-        pop(search, i);
+        if (ISEMPTY()) break;
+        POP(search, i);
     }
-    freeStack();
+
+    // crud options
     echo();
     mvwprintw(search, yMax-3, 2, "Enter index to edit or 'q' to quit");
     mvwprintw(search, yMax-2, 3, ">> ");
@@ -322,26 +298,24 @@ void searchMenu() {
     return;
 }
 
+// This function allows users to select which CRUD operation to perform
 void editMenu(char* input) {
-
-    char* choices[5] = {"CREATE MOVIE", "RETRIEVE MOVIE", "UPDATE MOVIE", "DELETE MOVIE", "BACK"};
-    int choice;
-    int highlight = 1;
-
+    // reset highlight
+    highlight=1;
+    // initialize window
     WINDOW* edit = newwin(yMax, xMax, 0, 0);
     box(edit, 0,0);
     wrefresh(edit);
     keypad(edit, true);
-
     mvwprintw(edit, 0, 0, "Edit Menu");
-
+    // select tool
     while(1) {
+        // print choices
         for (int i=1; i<=5; i++) {
             if (i == highlight) wattron(edit, A_REVERSE);
-            mvwprintw(edit, i+1, 2, choices[i-1]);
+            mvwprintw(edit, i+1, 2, editChoices[i-1]);
             wattroff(edit, A_REVERSE);
-        }
-        choice = wgetch(edit);
+        } choice = wgetch(edit);
         switch(choice) {
             case KEY_UP:
                 highlight--;
@@ -356,10 +330,11 @@ void editMenu(char* input) {
             default:
                 break;
         }
+        // on the press of enter
         if (choice == 10) break;
-    }
-    clearBox(edit);
-    setMax(yMax-5);
+    } clearBox(edit);
+
+    // call crud
     switch(highlight-1) {
         case 0: createMenu(); break;
         case 1: retrieveMenu(input); break;
@@ -371,12 +346,15 @@ void editMenu(char* input) {
     return;
 }
 
+// This function creates a new record and insert to RBT
 void createMenu(int yMax, int xMax) {
+    // initialize window
     WINDOW* create = newwin(yMax, xMax, 0, 0);
     box(create, 0,0); wrefresh(create);
     keypad(create, true); echo();
     char index[10], title[30], year[10], runtime[10], genres[30], media[20], y[5], m[3], d[3];
 
+    // user inputs
     mvwprintw(create, 0, 0, "Create Menu");
     mvwprintw(create, 2, 1, "Index");
     mvwprintw(create, 3, 2, ">> ");
@@ -406,48 +384,56 @@ void createMenu(int yMax, int xMax) {
     mvwprintw(create, 19, 2, ">> ");
     wgetstr(create, d);
 
+    // create movie and update RBT
     CREATE_MOVIE(filename, &RBT_INDEX, index, title, year, runtime, genres, media, m, d, y);
     updateRBT();
-
     endwin();
-
+    // close window
     return;
 }
 
+// This function retrieves a record from the RBT
 void retrieveMenu(char* input) {
-
+    // initialize window
     WINDOW* retrieve = newwin(yMax, xMax, 0, 0);
     box(retrieve, 0,0); wrefresh(retrieve); keypad(retrieve, true);
     mvwprintw(retrieve, 0, 0, "Retrieve Menu");
-    clearBox(retrieve);
+    // create stack
     INORDER_TREE_WALK_DELETED(RBT_INDEX);
+    // print stack
     mvwprintw(retrieve, 2, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
     for (int i=4; i<yMax-5; i++) {
-        if (empty()) break;
-        pop(retrieve, i);
+        if (ISEMPTY()) break;
+        POP(retrieve, i);
     }
-    freeStack();
 
+    // if input is NULL ask for input
     if (strcmp(input, "") == 0) {
         echo();
         mvwprintw(retrieve, yMax-3, 1, "Enter the index of the movie to retrieve");
         mvwprintw(retrieve, yMax-2, 2, ">> ");
         wgetstr(retrieve, str);
         RETRIEVE_MOVIE(filename, &RBT_INDEX, str);
-    } else {
+    }
+    // otherwise use the input as index to retrieve
+    else {
         RETRIEVE_MOVIE(filename, &RBT_INDEX, input);
     }
     updateRBT();
     endwin();
+    // close window
     return;
 }
 
+// This function updates a record from the RBT
 void updateMenu(char* input) {
+    // initialize window
     WINDOW* update = newwin(yMax, xMax, 0, 0);
     box(update, 0,0); wrefresh(update);
     keypad(update, true); echo();
     char index[10], title[30], year[10], runtime[10], genres[30], media[20], y[5], m[3], d[3];
 
+    // take user input
     mvwprintw(update, 0, 0, "Update Menu");
     mvwprintw(update, 2, 1, "Index");
     mvwprintw(update, 3, 2, ">> ");
@@ -477,49 +463,66 @@ void updateMenu(char* input) {
     mvwprintw(update, 19, 2, ">> ");
     wgetstr(update, d);
 
+    // update movie and rbts
     UPDATE_MOVIE(filename, &RBT_INDEX, index, title, year, runtime, genres, media, m, d, y);
     updateRBT();
     endwin();
+    // close window
     return;
 }
 
+// This function delets a record from the RBT
 void deleteMenu(char* input) {
-
+    // initialize window
     WINDOW* delete = newwin(yMax, xMax, 0, 0);
     box(delete, 0,0); wrefresh(delete); keypad(delete, true);
     mvwprintw(delete, 0, 0, "Delete Menu");
 
+    // if user input is NULL ask for input
     if (strcmp(input, "") == 0) {
         echo();
         mvwprintw(delete, 2, 1, "Enter the index of the movie to delete");
         mvwprintw(delete, 3, 2, ">> ");
         wgetstr(delete, str);
         DELETE_MOVIE(filename, &RBT_INDEX, str);
-    } else {
+    }
+    // otherwise use the given input as index to delete from rbt
+    else {
         DELETE_MOVIE(filename, &RBT_INDEX, input);
     }
     updateRBT();
     endwin();
+    // close window
     return;
 }
 
+// This function is called at the initial point of the program to read in the database
 RBT* loadMenu() {
+    // initialize window
     WINDOW* load = newwin(yMax, xMax, 0, 0);
     box(load, 0,0);
     wrefresh(load);
     keypad(load, true);
-    mvwprintw(load, 0, 0, "Loading...");
+    mvwprintw(load, 0, 0, "Load Menu");
+
+    // on a press of a key start loading
     mvwprintw(load, 2, 1, "Press any key to start loading data");
     wgetch(load);
+    mvwprintw(load, 4, 1, "Loading...");
+
+    // parse the tsv file
     parseFILE("./data/movie_records.tsv", &RBT_INDEX);
-    mvwprintw(load, 5, 1, "Loading process has completed. The data is now stored in memory");
-    mvwprintw(load, 6, 1, "Press any key to continue..");
+    mvwprintw(load, 6, 1, "Loading process has completed. The data is now stored in memory");
+    mvwprintw(load, 7, 1, "Press any key to continue..");
     wgetch(load);
     endwin();
+    // close window
     return RBT_INDEX;
 }
 
+// This function is a help menu to help users when stuck with controls
 void helpMenu() {
+    // initialize window
     WINDOW* help = newwin(yMax, xMax, 0, 0);
     box(help, 0,0);
     wrefresh(help);
@@ -537,23 +540,40 @@ void helpMenu() {
     mvwprintw(help, 12, 2, "Press any key to continue..");
     wgetch(help);
     endwin();
+    // close window
     return;
 }
 
+// This function is my own ncurses tool to clear the entire window except for the border lines and the title
 void clearBox(WINDOW* win) {
-    for (int j=1; j<yMax-1; j++)
-        for (int i=1; i<xMax-1; i++)
+    for (int j=1; j<yMax-1; j++) // rows
+        for (int i=1; i<xMax-1; i++) // columns
             mvwprintw(win, j, i, " ");
     return;
 }
 
+// This function parses the .tsv file downloaded from the IMDb website
+/*
+    NOTES:
+        during the download process, the makefile script edits the file to ignore all the other lines except for movies.
+        this function assumes that the script is ran and stores all of the movie datasets
+*/
 void parseFILE(char *tsvfile, RBT** RBT) {
+    // open file
 	FILE *fp = fopen(tsvfile, "r");
-	if (fp == 0) printf("Error\n");
+
+    // file does not exist
+	if (fp == 0) return;
+
+    // file does exist
 	else {
+        // initialize time variable to get current date
         time_t t = time(NULL); struct tm tm = *localtime(&t);
 		char line[500]; int row=0, col=0;
+
+        // get line until NULL
 		while (fgets(line, 500, fp)) {
+            // cut the line at '\n'
 			strtok(line, "\n"); char *ptr = strdup(line), *word, *index, *title, *year, *runtime, *genres;
 			while ((word = strsep(&ptr, "\t"))) {
                 if (strcmp(word, "\\N") == 0) word = "(null)";
@@ -568,6 +588,7 @@ void parseFILE(char *tsvfile, RBT** RBT) {
 				if (strcmp(word, "\0") == 0) break;
 				col++;
 			}
+            // insert to the rbt
 			*RBT = RB_INSERT_INDEX(*RBT, '1', atoi(index), title, atoi(year), atoi(runtime), genres, NULL, tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900);
 			row++; col=0;
 		}
@@ -575,12 +596,14 @@ void parseFILE(char *tsvfile, RBT** RBT) {
     fclose(fp);
 }
 
+// This function updates the sorted RBTs according to the RBT sorted by index
 void updateRBT() {
     RBT_EXPORT_TITLE(RBT_INDEX, &RBT_TITLE);
     RBT_EXPORT_YEAR(RBT_INDEX, &RBT_YEAR);
     RBT_EXPORT_RUNTIME(RBT_INDEX, &RBT_RUNTIME);
 }
 
+// This function is called at the initial point of the program to ensure that the log file for the user gets inputted
 void checkLog(char* username) {
     strcpy(filename, "./log/"); strcat(filename, username); strcat(filename, ".log");
     readLog(filename, &RBT_INDEX);

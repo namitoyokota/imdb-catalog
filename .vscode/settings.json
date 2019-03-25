@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "crud.h": "c"
+        "crud.h": "c",
+        "rbt.h": "c",
+        "logger.h": "c"
     }
 }

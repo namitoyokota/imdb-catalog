@@ -1,26 +1,27 @@
-#include <stdio.h>
 #include "../lib/logger.h"
-#include "../lib/rbt.h"
-#include "../lib/crud.h"
 
+// This function simply writes a given message to the log file with given path
 void printLog(char* filename, char* message) {
     FILE* fp = fopen(filename, "ab+");
+    // if file exists
     if (fp != 0) {
         fprintf(fp, "%s\n", message);
         fclose(fp);
     }
 }
 
+// This function reads in a log file with the given path and performs CRUD operations to update their history
 void readLog(char* filename, RBT** root) {
     printf("readLog\n");
     FILE* fp = fopen(filename, "r");
-    if (fp == 0) {
-        return;
-        // file not found
-    } else {
-        // file found
+    // if file does NOT exist,
+    if (fp == 0) return;
+    // if file does exist,
+    else {
+        // read in each line
         char line[100]; int row=0, col=0;
 		while (fgets(line, 100, fp)) {
+            // cut the line at '\n'
 			strtok(line, "\n"); char *ptr = strdup(line), *word, *function, *index, *title, *year, *runtime, *genres, *media, *m, *d, *y;
 			while ((word = strsep(&ptr, ","))) {
 				switch(col) {
@@ -39,18 +40,11 @@ void readLog(char* filename, RBT** root) {
 				if (strcmp(word, "\0") == 0) break;
 				col++;
 			}
-            printf("function: %s\n", function);
-            if (strcmp(function, "Create") == 0) {
-                CREATE_MOVIE("", root, index, title, year, runtime, genres, media, m, d, y);
-            } else if (strcmp(function, "Retreive") == 0) {
-                RETRIEVE_MOVIE("", root, index);
-            } else if (strcmp(function, "Update") == 0) {
-                UPDATE_MOVIE("", root, index, title, year, runtime, genres, media, m, d, y);
-            } else if (strcmp(function, "Delete") == 0) {
-                DELETE_MOVIE("", root, index);
-            } else {
-                printf("the function does not exist");
-            }
+            // perform CRUD operations
+            if (strcmp(function, "Create") == 0) CREATE_MOVIE("", root, index, title, year, runtime, genres, media, m, d, y);
+            else if (strcmp(function, "Retreive") == 0) RETRIEVE_MOVIE("", root, index);
+            else if (strcmp(function, "Update") == 0) UPDATE_MOVIE("", root, index, title, year, runtime, genres, media, m, d, y);
+            else DELETE_MOVIE("", root, index);
 			row++; col=0;
 		}
     }

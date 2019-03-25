@@ -3,16 +3,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include "../lib/stack.h"
-#define MAXS 101
+#include <curses.h>
 
+enum boo {T,F};
 typedef struct stack STACK;
 
-void push(bool enable, int index, char* title, int year, int runtime, char *genres, char* media, int m, int d, int y);
-void pop(WINDOW*, int);
-bool empty();
-void setMax(int);
-void freeStack();
+void PUSH(bool enable, int index, char* title, int year, int runtime, char *genres, char* media, int m, int d, int y);
+void POP(WINDOW*, int);
+int ISEMPTY();
+
+STACK* top;
 
 #endif

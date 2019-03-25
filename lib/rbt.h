@@ -3,12 +3,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
 #include <curses.h>
 #include "../lib/stack.h"
 
+enum type {RED,BLACK};
 typedef struct rbt RBT;
 
 // MAIN
@@ -24,12 +24,12 @@ void RB_INSERT_FIXUP(RBT**, RBT**);               // PAGE 316
     RBT* RB_INSERT_RUNTIME(RBT*, bool, int, char*, int, int, char*, char*, int, int, int);
 
 // DELETE
-void RB_TRANSPLANT(RBT**, RBT**, RBT**);         // PAGE 323
+void RB_TRANSPLANT(RBT**, RBT**, RBT**);          // PAGE 323
 void RB_DELETE_FIXUP(RBT**, RBT**);               // PAGE 326
-RBT* RB_DELETE(RBT*, RBT*);                      // PAGE 324
+RBT* RB_DELETE(RBT*, RBT*);                       // PAGE 324
 
 // PRINT
-void INORDER_TREE_WALK(RBT*);                      // PAGE 288
+void INORDER_TREE_WALK(RBT*);                     // PAGE 288
 void OUTORDER_TREE_WALK(RBT*);
     // DELETED List
     void INORDER_TREE_WALK_DELETED(RBT*);
@@ -54,7 +54,8 @@ void RBT_MODIFY(RBT*, bool, char*, char*, char*, char*, char*, char*, int, int, 
     void RBT_EXPORT_YEAR(RBT*, RBT**);
     void RBT_EXPORT_RUNTIME(RBT*, RBT**);
 
-void OUTORDER_STACK(RBT*, STACK*);
-void INORDER_STACK(RBT*, STACK*);
+// CREATE STACK
+void OUTORDER_STACK(RBT*);
+void INORDER_STACK(RBT*);
 
 #endif
