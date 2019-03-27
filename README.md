@@ -1,5 +1,5 @@
 # IMDb Catalog
-> a movie catalog in your memory
+> IMDB movie catalog in your memory
 
 ## Objective
 Utilizing different data structures and algorithms, I developed a IMDB Catalog that users can create, retrieve, update, and delete (CRUD) records. This program loads the lookup dataset into memory then controlled through curses user interface. Multiple users are denoted by multiple datafiles (.log)
@@ -16,22 +16,48 @@ Downloading the dataset needed for the program to compile can be achieved by run
 #### Compile
 Compiling the program is done by running the command, `make` in terminal. This creates object files in 'src' and the main executable in 'bin'. Now, go to run step.
 #### Run
-Finally, to run the program, simply enter `make run` and the user interface will execute.
+Finally, to run the program, simply enter `make run` and the user interface will be displayed in terminal.
+#### Valgrind
+If you have valgrind installed in your environment, `make valgrind` command can help you with memory debugging, memory leak detection, and profiling.
 #### Clean
-After done with execution, it is always good to clean up outputted files. This can be run with a make command, `make clean`. This process to remove object files and the executable.
+After execution, it is always good to clean up outputted files. This can be done with a make command, `make clean`. This process is to remove object files and the executable.
 #### Reset
-A make command `make reset` cleans files so that the directory is in the identical state as after cloning. This process removes log files and datasets. This requires you to run the download command once again.
+A make command `make reset` cleans files so that the directory is in the identical state as after cloning. This process removes log files and datasets. This requires you to run the download command once again before compiling and running the project.
 
 ## Tutorial
 > Insert video tutorial here
 
 ## Use Cases
+
 #### Sort
+- by index (ascending and descending)
+- by title (alphabetical)
+- by year (ascending and descending)
+- by runtime (ascending and descending)
 #### Filter
+- by year (minimum and maximum)
+- by runtime (minimum and maximum)
 #### Search
-#### Edit
+- by index
+- by title
+- by genre
+#### CRUD
+- create
+- retrieve
+- update
+- delete
+
+## Extras
+For more information about the project, go to <a href="./doc/Documentation.docx">./doc/Documentation.docx</a> for a full documentation. Similar to this README document, ______.
+
+For basic roadmap and planning for this project, go to <a href="./doc/Roadmap.docx">./doc/Roadmap.docx</a> This document goes over ______________.
+
+For explanation of the code for this project and its file structure, go to <a href="./doc/Explaining-the-Code.docx">./doc/Explaining-the-Code.docx</a> This document goes over _____________.
+
+For more information about what I learned through working on this project, go to <a href="./doc/What-I-Learned.docx">./doc/What-I-Learned.docx</a>
 
 ## Sources
 - <a href="https://www.imdb.com/interfaces/">IMDB Dataset</a>
-- <a href="https://www.cs.colostate.edu/~cs157/LectureMakefile.pdf">makefile</a>
-- <a href="https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46">readme</a>
+- <a href="http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">NCURSES Documentation</a>
+- <a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">NCURSES Tutorial</a>
+- <a href="https://www.cs.colostate.edu/~cs157/LectureMakefile.pdf">Makefile Lecture</a>
