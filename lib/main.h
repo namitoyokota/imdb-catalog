@@ -18,18 +18,18 @@
     // CRUD basics
     int yMax, xMax;
     // Main basics
-    char* str;
-    char* filename;
+    char str[30];
+    char filename[30];
     int choice;
     int highlight=1;
     // Movie
-    char* movie_index;
-    char* movie_title;
-    char* movie_year;
-    char* movie_runtime;
-    char* movie_genres;
-    char* movie_media;
-    char* movie_y, *movie_m, *movie_d;
+    char *movie_index;
+    char *movie_title;
+    char *movie_year;
+    char *movie_runtime;
+    char *movie_genres;
+    char *movie_media;
+    char *movie_y, *movie_m, *movie_d;
 
     // Choices for menus
     char* mainChoices[6] = {"Sort", "Filter", "Search", "CRUD", "Help", "Quit"};

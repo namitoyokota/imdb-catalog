@@ -12,7 +12,6 @@ void printLog(char* filename, char* message) {
 
 // This function reads in a log file with the given path and performs CRUD operations to update their history
 void readLog(char* filename, RBT** root) {
-    printf("readLog\n");
     FILE* fp = fopen(filename, "r");
     // if file does NOT exist,
     if (fp == 0) return;

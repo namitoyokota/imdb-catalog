@@ -1,19 +1,6 @@
 #include "../lib/main.h"
 
 int main(void) {
-    // malloc strings
-    filename = (char*) malloc(30*sizeof(char));
-    str = (char*) malloc(30*sizeof(char));
-    movie_index = (char*) malloc(10*sizeof(char));
-    movie_title = (char*) malloc(30*sizeof(char));
-    movie_year = (char*) malloc(10*sizeof(char));
-    movie_runtime = (char*) malloc(10*sizeof(char));
-    movie_genres = (char*) malloc(30*sizeof(char));
-    movie_media = (char*) malloc(20*sizeof(char));
-    movie_y = (char*) malloc(5*sizeof(char));
-    movie_m = (char*) malloc(3*sizeof(char));
-    movie_d = (char*) malloc(3*sizeof(char));
-    
     // initialize curses screen and get find yMax and xMax from console
     initscr(); noecho(); cbreak();
     getmaxyx(stdscr, yMax, xMax);
@@ -28,7 +15,8 @@ int main(void) {
     keypad(initial, true); echo();
     mvwprintw(initial, 0, 0, "Getting Started");
     mvwprintw(initial, 2, 1, "Enter username (this will determine your .log filename)");
-    mvwprintw(initial, 3, 2, ">> ");
+    mvwprintw(initial, 3, 1, "For example, type in 'monica' for a file 'monica.log'");
+    mvwprintw(initial, 5, 2, ">> ");
     wgetstr(initial, str);
     checkLog(str);
     clearBox(initial);
@@ -378,39 +366,54 @@ void createMenu() {
     box(create, 0,0); wrefresh(create);
     keypad(create, true); echo();
 
+    char index[10], title[30], year[10], runtime[5], genres[5], media[30], y[10], m[10], d[10];
+
     // user inputs
     mvwprintw(create, 0, 0, "Create Menu");
     mvwprintw(create, 2, 1, "Index");
     mvwprintw(create, 3, 2, ">> ");
-    wgetstr(create, movie_index);
+    wgetstr(create, index);
+
+    if (TREE_SEARCH_INDEX(RBT_INDEX, atoi(index)) != NULL) {
+        clearBox(create);
+        mvwprintw(create, 2, 1, "A movie with index %s already exists", index);
+        mvwprintw(create, 3, 1, "Press any key to continue...");
+        wgetch(create);
+        return;
+    }
+
     mvwprintw(create, 4, 1, "Title");
     mvwprintw(create, 5, 2, ">> ");
-    wgetstr(create, movie_title);
-    mvwprintw(create, 6, 1, "Year");
+    wgetstr(create, title);
+    mvwprintw(create, 6, 1, "Released Year");
     mvwprintw(create, 7, 2, ">> ");
-    wgetstr(create, movie_year);
-    mvwprintw(create, 8, 1, "Runtime");
+    wgetstr(create, year);
+    mvwprintw(create, 8, 1, "Runtime (mins)");
     mvwprintw(create, 9, 2, ">> ");
-    wgetstr(create, movie_runtime);
+    wgetstr(create, runtime);
     mvwprintw(create, 10, 1, "Genres");
     mvwprintw(create, 11, 2, ">> ");
-    wgetstr(create, movie_genres);
-    mvwprintw(create, 12, 1, "Media");
+    wgetstr(create, genres);
+    mvwprintw(create, 12, 1, "Media Type");
     mvwprintw(create, 13, 2, ">> ");
-    wgetstr(create, movie_media);
-    mvwprintw(create, 14, 1, "Year");
+    wgetstr(create, media);
+    mvwprintw(create, 14, 1, "Year Acquired");
     mvwprintw(create, 15, 2, ">> ");
-    wgetstr(create, movie_y);
-    mvwprintw(create, 16, 1, "Month");
+    wgetstr(create, y);
+    mvwprintw(create, 16, 1, "Month Acquired");
     mvwprintw(create, 17, 2, ">> ");
-    wgetstr(create, movie_m);
-    mvwprintw(create, 18, 1, "Day");
+    wgetstr(create, m);
+    mvwprintw(create, 18, 1, "Day Acquired");
     mvwprintw(create, 19, 2, ">> ");
-    wgetstr(create, movie_d);
+    wgetstr(create, d);
 
     // create movie and update RBT
-    CREATE_MOVIE(filename, &RBT_INDEX, movie_index, movie_title, movie_year, movie_runtime, movie_genres, movie_media, movie_m, movie_d, movie_y);
+    CREATE_MOVIE(filename, &RBT_INDEX, index, title, year, runtime, genres, media, m, d, y);
     updateRBT();
+    clearBox(create);
+    mvwprintw(create, 2, 1, "A movie has been added to the catalog");
+    mvwprintw(create, 3, 1, "Press any key to continue...");
+    wgetch(create);
     endwin();
     // close window
     return;
@@ -422,11 +425,12 @@ void retrieveMenu(char* input) {
     WINDOW* retrieve = newwin(yMax, xMax, 0, 0);
     box(retrieve, 0,0); wrefresh(retrieve); keypad(retrieve, true);
     mvwprintw(retrieve, 0, 0, "Retrieve Menu");
+    mvwprintw(retrieve, 2, 2, "DELETED MOVIES");
     // create stack
     INORDER_TREE_WALK_DELETED(RBT_INDEX);
     // print stack
-    mvwprintw(retrieve, 2, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
-    for (int i=4; i<yMax-5; i++) {
+    mvwprintw(retrieve, 4, 2, "INDEX\tTITLE\tYEAR\tRUNTIME\tGENRES\tMEDIA\tDATE");
+    for (int i=6; i<yMax-3; i++) {
         if (ISEMPTY()) break;
         POP(retrieve, i);
     }
@@ -439,11 +443,31 @@ void retrieveMenu(char* input) {
         mvwprintw(retrieve, yMax-2, 2, ">> ");
         wgetstr(retrieve, str);
         if(strcmp(str, "q") == 0) return;
-        RETRIEVE_MOVIE(filename, &RBT_INDEX, str);
+        clearBox(retrieve);
+        if (TREE_SEARCH_INDEX(RBT_INDEX, atoi(str)) == NULL) {
+            mvwprintw(retrieve, 2, 1, "A movie with index of %s was not found", str);
+            mvwprintw(retrieve, 3, 1, "Press any key to continue...");
+            wgetch(retrieve);
+        } else {
+            mvwprintw(retrieve, 2, 1, "The movie has been retrieved");
+            mvwprintw(retrieve, 3, 1, "Press any key to continue...");
+            wgetch(retrieve);
+            RETRIEVE_MOVIE(filename, &RBT_INDEX, str);
+        }
     }
     // otherwise use the input as index to retrieve
     else {
-        RETRIEVE_MOVIE(filename, &RBT_INDEX, input);
+        clearBox(retrieve);
+        if (TREE_SEARCH_INDEX(RBT_INDEX, atoi(input)) == NULL) {
+            mvwprintw(retrieve, 2, 1, "A movie with index of %s was not found", str);
+            mvwprintw(retrieve, 3, 1, "Press any key to continue...");
+            wgetch(retrieve);
+        } else {
+            mvwprintw(retrieve, 2, 1, "The movie has been retrieved");
+            mvwprintw(retrieve, 3, 1, "Press any key to continue...");
+            wgetch(retrieve);
+            RETRIEVE_MOVIE(filename, &RBT_INDEX, input);
+        }
     }
     updateRBT();
     endwin();
@@ -458,39 +482,59 @@ void updateMenu(char* input) {
     box(update, 0,0); wrefresh(update);
     keypad(update, true); echo();
 
+    char index[10], title[30], year[10], runtime[5], genres[5], media[30], y[10], m[10], d[10];
+
     // take user input
     mvwprintw(update, 0, 0, "Update Menu");
     mvwprintw(update, 2, 1, "Index");
-    mvwprintw(update, 3, 2, ">> ");
-    wgetstr(update, movie_index);
+    if (strcmp(input, "") == 0) {
+        mvwprintw(update, 3, 2, ">> ");
+        wgetstr(update, index);
+    } else {
+        mvwprintw(update, 3, 2, ">> %s", input);
+        strcpy(index, input);
+    }
+
+    if (TREE_SEARCH_INDEX(RBT_INDEX, atoi(index)) == NULL) {
+        clearBox(update);
+        mvwprintw(update, 2, 1, "A movie with index %s does not exist", index);
+        mvwprintw(update, 3, 1, "Press any key to continue...");
+        wgetch(update);
+        return;
+    }
+
     mvwprintw(update, 4, 1, "Title");
     mvwprintw(update, 5, 2, ">> ");
-    wgetstr(update, movie_title);
-    mvwprintw(update, 6, 1, "Year");
+    wgetstr(update, title);
+    mvwprintw(update, 6, 1, "Released Year");
     mvwprintw(update, 7, 2, ">> ");
-    wgetstr(update, movie_year);
-    mvwprintw(update, 8, 1, "Runtime");
+    wgetstr(update, year);
+    mvwprintw(update, 8, 1, "Runtime (mins)");
     mvwprintw(update, 9, 2, ">> ");
-    wgetstr(update, movie_runtime);
+    wgetstr(update, runtime);
     mvwprintw(update, 10, 1, "Genres");
     mvwprintw(update, 11, 2, ">> ");
-    wgetstr(update, movie_genres);
-    mvwprintw(update, 12, 1, "Media");
+    wgetstr(update, genres);
+    mvwprintw(update, 12, 1, "Media Type");
     mvwprintw(update, 13, 2, ">> ");
-    wgetstr(update, movie_media);
-    mvwprintw(update, 14, 1, "Year");
+    wgetstr(update, media);
+    mvwprintw(update, 14, 1, "Year Acquired");
     mvwprintw(update, 15, 2, ">> ");
-    wgetstr(update, movie_y);
-    mvwprintw(update, 16, 1, "Month");
+    wgetstr(update, y);
+    mvwprintw(update, 16, 1, "Month Acquired");
     mvwprintw(update, 17, 2, ">> ");
-    wgetstr(update, movie_m);
-    mvwprintw(update, 18, 1, "Day");
+    wgetstr(update, m);
+    mvwprintw(update, 18, 1, "Day Acquired");
     mvwprintw(update, 19, 2, ">> ");
-    wgetstr(update, movie_d);
-
-    // update movie and rbts
-    UPDATE_MOVIE(filename, &RBT_INDEX, movie_index, movie_title, movie_year, movie_runtime, movie_genres, movie_media, movie_m, movie_d, movie_y);
+    wgetstr(update, d);
+        
+    // update movie and update RBT
+    UPDATE_MOVIE(filename, &RBT_INDEX, index, title, year, runtime, genres, media, m, d, y);
     updateRBT();
+    clearBox(update);
+    mvwprintw(update, 2, 1, "A movie has been updated");
+    mvwprintw(update, 3, 1, "Press any key to continue...");
+    wgetch(update);
     endwin();
     // close window
     return;
@@ -509,12 +553,32 @@ void deleteMenu(char* input) {
         mvwprintw(delete, 2, 1, "Enter the index to delete or 'q' to quit");
         mvwprintw(delete, 3, 2, ">> ");
         wgetstr(delete, str);
-        if(strcmp(str, "q") == 0) return;
-        DELETE_MOVIE(filename, &RBT_INDEX, str);
+        if (strcmp(str, "q") == 0) return;
+        clearBox(delete);
+        if (TREE_SEARCH_INDEX(RBT_INDEX, atoi(str)) == NULL) {
+            mvwprintw(delete, 2, 1, "A movie with index of %s was not found", str);
+            mvwprintw(delete, 3, 1, "Press any key to continue...");
+            wgetch(delete);
+        } else {
+            mvwprintw(delete, 2, 1, "The movie has been deleted");
+            mvwprintw(delete, 3, 1, "Press any key to continue...");
+            wgetch(delete);
+            DELETE_MOVIE(filename, &RBT_INDEX, str);
+        }
     }
     // otherwise use the given input as index to delete from rbt
     else {
-        DELETE_MOVIE(filename, &RBT_INDEX, input);
+        clearBox(delete);
+        if (TREE_SEARCH_INDEX(RBT_INDEX, atoi(input)) == NULL) {
+            mvwprintw(delete, 2, 1, "A movie with index of %s was not found", str);
+            mvwprintw(delete, 3, 1, "Press any key to continue...");
+            wgetch(delete);
+        } else {
+            mvwprintw(delete, 2, 1, "The movie has been deleted");
+            mvwprintw(delete, 3, 1, "Press any key to continue...");
+            wgetch(delete);
+            DELETE_MOVIE(filename, &RBT_INDEX, input);
+        }
     }
     updateRBT();
     endwin();
@@ -535,6 +599,7 @@ RBT* loadMenu() {
     mvwprintw(load, 2, 1, "Press any key to start loading data");
     wgetch(load);
     mvwprintw(load, 4, 1, "Loading...");
+    wrefresh(load);
 
     // parse the tsv file
     parseFILE("./data/movie_records.tsv", &RBT_INDEX);
@@ -611,7 +676,7 @@ void parseFILE(char *tsvfile, RBT** RBT) {
 			}
             // insert to the rbt
 			*RBT = RB_INSERT_INDEX(*RBT, '1', atoi(movie_index), movie_title, atoi(movie_year), atoi(movie_runtime), movie_genres, NULL, tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900);
-			row++; col=0;
+            row++; col=0;
 		}
 	}
     fclose(fp);
