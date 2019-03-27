@@ -41,5 +41,8 @@ valgrind : main
 
 clean :
 		rm -f $(OBJS) ./bin/main
-		rm -f ./logs/*.log
+
+reset :
+		rm -f ./data/*
+		rm -f ./log/*.log
 		rm -f ./.log
