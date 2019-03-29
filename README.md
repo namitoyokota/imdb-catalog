@@ -2,7 +2,7 @@
 > IMDB movie catalog in your memory
 
 ## Objective
-Utilizing different data structures and algorithms, I developed a IMDB Catalog that users can create, retrieve, update, and delete (CRUD) records. This program loads the lookup dataset into memory then controlled through curses user interface. Multiple users are denoted by multiple datafiles (.log)
+Utilizing different data structures and algorithms, I developed a IMDB Catalog that users can create, retrieve, update, and delete (CRUD) records. This program loads the lookup dataset into memory then controlled through curses user interface. Multiple users are denoted by multiple datafiles (.log).
 
 ## Installation
 1. Open Terminal and direct to a directory you wish to download the project.
@@ -24,37 +24,22 @@ After execution, it is always good to clean up outputted files. This can be done
 #### Reset
 A make command `make reset` cleans files so that the directory is in the identical state as after cloning. This process removes log files and datasets. This requires you to run the download command once again before compiling and running the project.
 
-## Tutorial
-> Insert video tutorial here
+## Demo
+[![Demo](http://img.youtube.com/vi/Imf1GN_EypU/0.jpg)](http://www.youtube.com/watch?v=Imf1GN_EypU "Demo")
+
 
 ## Use Cases
-
-#### Sort
-- by index (ascending and descending)
-- by title (alphabetical)
-- by year (ascending and descending)
-- by runtime (ascending and descending)
-#### Filter
-- by year (minimum and maximum)
-- by runtime (minimum and maximum)
-#### Search
-- by index
-- by title
-- by genre
-#### CRUD
-- create
-- retrieve
-- update
-- delete
+- Sort
+- Filter
+- Search
+- CRUD
 
 ## Extras
-For more information about the project, go to <a href="./doc/Documentation.docx">./doc/Documentation.docx</a> for a full documentation. Similar to this README document, ______.
+For more information about the project, go to <a href="./doc/Documentation.docx">./doc/Documentation.docx</a> for a full documentation. Similar to this README document, this covers the installation process, set up process, and more information in deep detail.
 
-For basic roadmap and planning for this project, go to <a href="./doc/Roadmap.docx">./doc/Roadmap.docx</a> This document goes over ______________.
+For explanation of the code for this project and its file structure, go to <a href="./doc/Explaining-the-Code.docx">./doc/Explaining-the-Code.docx</a>. This document goes over each of the files included in the directory to provide full explanation of how this project was built and how it works.
 
-For explanation of the code for this project and its file structure, go to <a href="./doc/Explaining-the-Code.docx">./doc/Explaining-the-Code.docx</a> This document goes over _____________.
-
-For more information about what I learned through working on this project, go to <a href="./doc/What-I-Learned.docx">./doc/What-I-Learned.docx</a>
+For more information about what I learned through working on this project, go to <a href="./doc/What-I-Learned.docx">./doc/What-I-Learned.docx</a>.
 
 ## Sources
 - <a href="https://www.imdb.com/interfaces/">IMDB Dataset</a>
