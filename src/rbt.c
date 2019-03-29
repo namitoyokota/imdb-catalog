@@ -476,22 +476,22 @@ void RBT_MODIFY(RBT* root, bool enable, char* index, char* title, char* year, ch
 void RBT_EXPORT_TITLE(RBT* root, RBT** RBT_title)  {
     if (root==NULL)
         return;
-    RBT_EXPORT_TITLE(root->left, RBT_title);
     *RBT_title = RB_INSERT_TITLE(*RBT_title, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+    RBT_EXPORT_TITLE(root->left, RBT_title);
 	RBT_EXPORT_TITLE(root->right, RBT_title);
 }
 void RBT_EXPORT_YEAR(RBT* root, RBT** RBT_year)  {
     if (root==NULL)
         return;
-    RBT_EXPORT_YEAR(root->left, RBT_year);
     *RBT_year = RB_INSERT_YEAR(*RBT_year, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+    RBT_EXPORT_YEAR(root->left, RBT_year);
 	RBT_EXPORT_YEAR(root->right, RBT_year);
 }
 void RBT_EXPORT_RUNTIME(RBT* root, RBT** RBT_runtime)  {
     if (root==NULL)
         return;
-    RBT_EXPORT_RUNTIME(root->left, RBT_runtime);
     *RBT_runtime = RB_INSERT_RUNTIME(*RBT_runtime, root->enable, root->index, root->title, root->year, root->runtime, root->genres, root->media, root->m, root->d, root->y);
+    RBT_EXPORT_RUNTIME(root->left, RBT_runtime);
 	RBT_EXPORT_RUNTIME(root->right, RBT_runtime);
 }
 

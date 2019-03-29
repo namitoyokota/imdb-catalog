@@ -646,7 +646,7 @@ void clearBox(WINDOW* win) {
 // This function parses the .tsv file downloaded from the IMDb website. During the download process,
 // the makefile script edits the file to ignore all the other lines except for movies.
 // this function assumes that the script is ran and stores all of the movie datasets
-void parseFILE(char *tsvfile, RBT** RBT) {
+void parseFILE(char *tsvfile, RBT** RBT_INDEX) {
     // open file
 	FILE *fp = fopen(tsvfile, "r");
     // file does not exist
@@ -675,7 +675,7 @@ void parseFILE(char *tsvfile, RBT** RBT) {
 				col++;
 			}
             // insert to the rbt
-			*RBT = RB_INSERT_INDEX(*RBT, '1', atoi(movie_index), movie_title, atoi(movie_year), atoi(movie_runtime), movie_genres, NULL, tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900);
+			*RBT_INDEX = RB_INSERT_INDEX(*RBT_INDEX, '1', atoi(movie_index), movie_title, atoi(movie_year), atoi(movie_runtime), movie_genres, NULL, tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900);
             row++; col=0;
 		}
 	}
@@ -684,6 +684,7 @@ void parseFILE(char *tsvfile, RBT** RBT) {
 
 // This function updates the sorted RBTs according to the RBT sorted by index
 void updateRBT() {
+    RBT_TITLE = NULL; RBT_YEAR = NULL; RBT_RUNTIME = NULL;
     RBT_EXPORT_TITLE(RBT_INDEX, &RBT_TITLE);
     RBT_EXPORT_YEAR(RBT_INDEX, &RBT_YEAR);
     RBT_EXPORT_RUNTIME(RBT_INDEX, &RBT_RUNTIME);
