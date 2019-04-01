@@ -29,8 +29,6 @@ void RB_DELETE_FIXUP(RBT**, RBT**);               // PAGE 326
 RBT* RB_DELETE(RBT*, RBT*);                       // PAGE 324
 
 // PRINT
-void INORDER_TREE_WALK(RBT*);                     // PAGE 288
-void OUTORDER_TREE_WALK(RBT*);
     // DELETED List
     void INORDER_TREE_WALK_DELETED(RBT*);
     // FILTERED List
@@ -38,6 +36,8 @@ void OUTORDER_TREE_WALK(RBT*);
     void INORDER_TREE_WALK_YEAR_SMALLER(RBT*, int);
     void INORDER_TREE_WALK_RUNTIME_BIGGER(RBT*, int);
     void INORDER_TREE_WALK_RUNTIME_SMALLER(RBT*, int);
+    void OUTORDER_STACK(RBT*);
+    void INORDER_STACK(RBT*);
 
 // SEARCH
     RBT* TREE_SEARCH_INDEX(RBT*, int);            // PAGE 290
@@ -53,11 +53,8 @@ void RBT_MODIFY(RBT*, bool, char*, char*, char*, char*, char*, char*, int, int, 
     void RBT_EXPORT_TITLE(RBT*, RBT**);
     void RBT_EXPORT_YEAR(RBT*, RBT**);
     void RBT_EXPORT_RUNTIME(RBT*, RBT**);
-
-// CREATE STACK
-void OUTORDER_STACK(RBT*);
-void INORDER_STACK(RBT*);
-
+    
+// FREE
 void freeTree(RBT*);
 
 #endif
