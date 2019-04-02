@@ -42,7 +42,8 @@ For explanation of the code for this project and its file structure, go to <a hr
 For more information about what I learned through working on this project, go to <a href="./doc/What-I-Learned.docx">./doc/What-I-Learned.docx</a>.
 
 ## Sources
-- <a href="https://www.imdb.com/interfaces/">IMDB Dataset</a>
-- <a href="http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">NCURSES Documentation</a>
-- <a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">NCURSES Tutorial</a>
-- <a href="https://www.cs.colostate.edu/~cs157/LectureMakefile.pdf">Makefile Lecture</a>
+- <a href="https://en.wikipedia.org/wiki/Introduction_to_Algorithms">Introduction to Algorithms</a> Book
+- IMDB <a href="https://www.imdb.com/interfaces/">Dataset</a>
+- NCURSES <a href="http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">Documentation</a>
+- NCURSES<a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">Tutorial</a>
+- Makefile <a href="https://www.cs.colostate.edu/~cs157/LectureMakefile.pdf">Lecture</a>
