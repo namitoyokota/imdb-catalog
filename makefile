@@ -18,7 +18,7 @@ download :
 			rm ./data/title.basics.tsv; \
 		fi
 
-main.o : ./src/main.c ./src/main.h
+main.o : ./src/main.c ./lib/main.h
 		gcc $(OOPTS) ./src/main.c
 
 stack.o : ./src/stack.c ./lib/stack.h
