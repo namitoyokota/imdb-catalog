@@ -1,49 +1,29 @@
-# IMDb Catalog
-> IMDB movie catalog in your memory
+<p align="center">
+  <a href="https://github.com/namitoyokota/imdb-catalog">
+    <img src="https://image.flaticon.com/icons/png/512/54/54335.png" height="148" alt="image here">
+  </a>
+  <h2 align="center">IMDB Catalog</h2>
+  <p align="center">
+    <a href="https://youtu.be/Imf1GN_EypU">
+    	<img src="https://img.shields.io/website/https/youtu.be/Imf1GN_EypU.svg?color=blue&label=demo&style=flat-square" alt="demo" />
+    </a>
+    <a href="https://github.com/namitoyokota/imdb-catalog">
+	    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square"" alt="prs welcome">
+    </a>
+  </p>
+</p>
 
-## Objective
 Utilizing different data structures and algorithms, I developed a IMDB Catalog that users can create, retrieve, update, and delete (CRUD) records. This program loads the lookup dataset into memory then controlled through curses user interface. Multiple users are denoted by multiple datafiles (.log).
 
 ## Installation
-1. Open Terminal and direct to a directory you wish to download the project.
-2. Clone the GitHub repository with command `git clone https://github.com/namitoyokota/imdb-catalog.git`.
-3. If ncurses is not installed in your environment, enter command `sudo apt-get install libncurses5-dev libncursesw5-dev` to install.
-4. After cloning the git repository, change directory with `cd imdb-catalog`.
+| **Command**                        | **Description**                      |
+|------------------------------------|--------------------------------------|
+| `make download`                    | Download required dataset from IMDB  |
+| `make`                             | Compile                              |
+| `make run`                         | Run                                  |
+| `make valgrind`                    | Run Valgrind for Memory Management   |
+| `make clean`                       | Remove outputted files               |
+| `make reset`                       | Remove log files and datasets        |
 
-## Set Up
-#### Download
-Downloading the dataset needed for the program to compile can be achieved by running a make command, `make download`. The downloaded file is now in 'data'. Then go to compile step.
-#### Compile
-Compiling the program is done by running the command, `make` in terminal. This creates object files in 'src' and the main executable in 'bin'. Now, go to run step.
-#### Run
-Finally, to run the program, simply enter `make run` and the user interface will be displayed in terminal.
-#### Valgrind
-If you have valgrind installed in your environment, `make valgrind` command can help you with memory debugging, memory leak detection, and profiling.
-#### Clean
-After execution, it is always good to clean up outputted files. This can be done with a make command, `make clean`. This process is to remove object files and the executable.
-#### Reset
-A make command `make reset` cleans files so that the directory is in the identical state as after cloning. This process removes log files and datasets. This requires you to run the download command once again before compiling and running the project.
-
-## Demo
-[![Demo](http://img.youtube.com/vi/Imf1GN_EypU/0.jpg)](http://www.youtube.com/watch?v=Imf1GN_EypU "Demo")
-
-
-## Use Cases
-- Sort
-- Filter
-- Search
-- CRUD
-
-## Extras
-For more information about the project, go to <a href="./doc/Documentation.docx">./doc/Documentation.docx</a> for a full documentation. Similar to this README document, this covers the installation process, set up process, and more information in deep detail.
-
-For explanation of the code for this project and its file structure, go to <a href="./doc/Explaining-the-Code.docx">./doc/Explaining-the-Code.docx</a>. This document goes over each of the files included in the directory to provide full explanation of how this project was built and how it works.
-
-For more information about what I learned through working on this project, go to <a href="./doc/What-I-Learned.docx">./doc/What-I-Learned.docx</a>.
-
-## Sources
-- <a href="https://en.wikipedia.org/wiki/Introduction_to_Algorithms">Introduction to Algorithms</a> Book
-- IMDB <a href="https://www.imdb.com/interfaces/">Dataset</a>
-- NCURSES <a href="http://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html">Documentation</a>
-- NCURSES<a href="https://www.youtube.com/playlist?list=PL2U2TQ__OrQ8jTf0_noNKtHMuYlyxQl4v">Tutorial</a>
-- Makefile <a href="https://www.cs.colostate.edu/~cs157/LectureMakefile.pdf">Lecture</a>
+<hr>
+<p align="center">&copy; Namito Yokota</p>
