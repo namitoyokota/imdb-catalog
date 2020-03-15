@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "crud.h": "c",
-        "rbt.h": "c",
-        "logger.h": "c"
-    }
-}
